@@ -1,0 +1,24 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Purchase Receipt",
+  "enabled": 1,
+  "modified": "2024-08-13 13:52:56.733246",
+  "module": null,
+  "name": "Create Button in Purchase receipt (Customs card receipt)",
+  "script": "frappe.ui.form.on('Purchase Receipt', {\r\n    refresh: function(frm) {\r\n        frm.add_custom_button(__('Customs Card Receipt'), function() {\r\n            frappe.new_doc('Customs Card Receipt', {\r\n                // You can pass default values here if needed\r\n                // purchase_receipt: frm.doc.name  (if you want to link it back to the purchase receipt)\r\n            });\r\n        }, __(\"Create\"));\r\n    }\r\n});\r\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Customs Card Receipt",
+  "enabled": 0,
+  "modified": "2024-08-13 15:30:25.858056",
+  "module": null,
+  "name": "testtt",
+  "script": "frappe.ui.form.on('Customs Card Receipt', {\r\n    refresh: function (frm) {\r\n        // Add a custom button in the Purchase Receipt\r\n        frm.add_custom_button(__('Create Customs Card Receipt'), function () {\r\n            frappe.call({\r\n                method: 'frappe.client.get',\r\n                args: {\r\n                    doctype: 'Purchase Receipt',\r\n                    name: frm.doc.name\r\n                },\r\n                callback: function (r) {\r\n                    if (r.message) {\r\n                        let purchase_receipt_name = r.message.name;\r\n                        frappe.model.open_mapped_doc({\r\n                            method: 'path.to.your.method',\r\n                            frm: frm,\r\n                            purchase_receipt_name: purchase_receipt_name\r\n                        });\r\n                    }\r\n                }\r\n            });\r\n        });\r\n    }\r\n});\r\n",
+  "view": "Form"
+ }
+]

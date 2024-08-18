@@ -1,0 +1,50 @@
+[
+ {
+  "allow_guest": 0,
+  "api_method": null,
+  "cron_format": null,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Server Script",
+  "doctype_event": "After Submit",
+  "event_frequency": "All",
+  "modified": "2024-08-08 11:07:21.419715",
+  "module": "Accounts",
+  "name": "sales invoice terms",
+  "reference_doctype": "Sales Invoice",
+  "script": "# This script sets default payment terms when a new Sales Invoice is created\r\ndef on_update(doc, method):\r\n    if not doc.payment_terms:\r\n        doc.payment_terms = \"Net 30\"  # Set your default payment terms here\r\n",
+  "script_type": "DocType Event"
+ },
+ {
+  "allow_guest": 0,
+  "api_method": null,
+  "cron_format": null,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Server Script",
+  "doctype_event": "Before Save",
+  "event_frequency": "All",
+  "modified": "2024-08-13 10:31:15.861377",
+  "module": null,
+  "name": "Purchase Receipt",
+  "reference_doctype": "Purchase Receipt",
+  "script": "for item in doc.items:\n    if item.has_serial_no:\n        if not item.serial_no:\n            frappe.throw(f\"Serial numbers are required for item {item.item_code}.\")\n        \n        serial_numbers = item.serial_no.split(\"\\n\")\n        if len(serial_numbers) != item.qty:\n            frappe.throw(f\"Number of serial numbers ({len(serial_numbers)}) does not match the quantity ({item.qty}) for item {item.item_code}.\")\n\n        # Create Serial Numbers\n        for serial_no in serial_numbers:\n            serial_number_doc = frappe.new_doc('Serial No')\n            serial_number_doc.item_code = item.item_code\n            serial_number_doc.serial_no = serial_no.strip()\n            serial_number_doc.purchase_receipt = doc.name\n            serial_number_doc.company = doc.company\n            serial_number_doc.purchase_date = doc.posting_date\n            serial_number_doc.insert()\n",
+  "script_type": "DocType Event"
+ },
+ {
+  "allow_guest": 0,
+  "api_method": null,
+  "cron_format": null,
+  "disabled": 1,
+  "docstatus": 0,
+  "doctype": "Server Script",
+  "doctype_event": "Before Insert",
+  "event_frequency": "All",
+  "modified": "2024-08-13 15:29:57.819185",
+  "module": null,
+  "name": "Customs Card Receipt",
+  "reference_doctype": "Customs Card Receipt",
+  "script": "# Server Script to populate associated_purchase_receipt field\r\nfrom frappe import _\r\n\r\ndef set_associated_purchase_receipt(doc, method):\r\n    if doc.get('associated_purchase_receipt') == '':  # Check if the field is empty\r\n        # Get the purchase receipt ID from the context\r\n        purchase_receipt_id = frappe.get_value('Purchase Receipt', doc.purchase_receipt, 'name')\r\n        doc.associated_purchase_receipt = purchase_receipt_id\r\n",
+  "script_type": "DocType Event"
+ }
+]
