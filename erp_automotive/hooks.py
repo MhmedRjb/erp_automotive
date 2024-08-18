@@ -213,3 +213,9 @@ app_license = "MIT"
 # auth_hooks = [
 # 	"erp_automotive.auth.validate"
 # ]
+
+
+# Fixtures
+# ---------
+
+fixtures = ["Custom Field","Client Script","Server Script"]
