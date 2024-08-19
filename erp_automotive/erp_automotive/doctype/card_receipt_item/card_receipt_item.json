@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-08-19 08:53:06.493813",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "serial_no",
+  "customs_card"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fieldname": "serial_no",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Serial No"
+  },
+  {
+   "fieldname": "customs_card",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Customs Card"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-08-19 09:19:01.150785",
+ "modified_by": "Administrator",
+ "module": "Erp Automotive",
+ "name": "card receipt item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

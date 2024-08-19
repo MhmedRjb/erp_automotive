@@ -219,11 +219,7 @@ app_license = "MIT"
 # ---------
 
 
-# fixtures = [
-#     {
-#         "doctype": "Custom Field",
-#         "filters": {
-#             "dt":"Card Receipt"
-#         }
-#     }
-# ]
+fixtures = [
+"Custom Field"
+
+]
