@@ -45,9 +45,8 @@
   },
   {
    "fieldname": "supplier_delivery_note",
-   "fieldtype": "Link",
-   "label": "Supplier Delivery Note",
-   "options": "Delivery Note"
+   "fieldtype": "Data",
+   "label": "Supplier Delivery Note"
   },
   {
    "fieldname": "purchase_receipt_no",

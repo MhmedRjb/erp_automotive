@@ -1,10 +1,12 @@
 frappe.ui.form.on('Purchase Receipt', {
     refresh: function(frm) {
         console.log(frm);
-        if (frm.doc.status === "Draft") {
+        // if (frm.doc.status === "Draft") { }
             frm.add_custom_button(__('Create Customs Card Receipt'), function(){
                 frappe.new_doc('customs card receipt', {}, inv => {
                     inv.supplier = frm.doc.supplier;
+                    inv.purchase_receipt_no= frm.doc.name;
+                    inv.supplier_delivery_note = frm.doc.supplier_delivery_note;
                     frm.doc.items.forEach(item => {
                         // Check if the item has serial numbers
                         if (item.serial_no) {
@@ -27,6 +29,5 @@ frappe.ui.form.on('Purchase Receipt', {
                 });
                 // frappe.msgprint("Customs Card Receipt created!");
             }, __("Create"));
-        }
     }
 });
