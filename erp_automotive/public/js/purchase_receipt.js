@@ -4,7 +4,6 @@ frappe.ui.form.on('Purchase Receipt', {
             frm.add_custom_button(__('Create Customs Card Receipt'), function(){
                 frappe.new_doc('customs card receipt', {}, inv => {
                     inv.supplier = frm.doc.supplier;
-
                     frm.doc.items.forEach(items => {
                         let inv_item = frappe.model.add_child(inv, 'items');
                         inv_item.item_code = items.item_code;
