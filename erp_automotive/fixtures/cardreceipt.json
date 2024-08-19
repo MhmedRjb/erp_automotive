@@ -1,0 +1,54 @@
+{
+    "doctype": "DocType",
+    "name": "Card Receipt",
+    "module": "ERP Automotive",
+    "is_submittable": 1,
+    "track_changes": 1,
+    "fields": [
+        {
+            "fieldname": "date",
+            "fieldtype": "Date",
+            "label": "Date",
+            "default": "Today",
+            "reqd": 1,
+            "module": "ERP Automotive"
+        },
+        {
+            "fieldname": "supplier",
+            "fieldtype": "Link",
+            "options": "Supplier",
+            "label": "Supplier",
+            "reqd": 1,
+            "module": "ERP Automotive"
+        },
+        {
+            "fieldname": "supplier_name",
+            "fieldtype": "Data",
+            "label": "Supplier Name",
+            "reqd": 1,
+            "module": "ERP Automotive"
+        },
+        {
+            "fieldname": "supplier_delivery_note",
+            "fieldtype": "Data",
+            "label": "Supplier Delivery Note",
+            "module": "ERP Automotive"
+        },
+        {
+            "fieldname": "purchase_receipt",
+            "fieldtype": "Link",
+            "options": "Purchase Receipt",
+            "label": "Purchase Receipt",
+            "reqd": 0,
+            "module": "ERP Automotive"
+        },
+        {
+            "fieldname": "company",
+            "fieldtype": "Link",
+            "options": "Company",
+            "label": "Company",
+            "reqd": 1,
+            "module": "ERP Automotive"
+        }
+    ]
+}
