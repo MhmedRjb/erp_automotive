@@ -1,5 +1,5 @@
 from erpnext.stock.doctype.purchase_receipt.purchase_receipt import PurchaseReceipt
-
+from frappe import _
 import frappe
 class CustomPurchaseReceipt(PurchaseReceipt):
     
@@ -14,4 +14,7 @@ class CustomPurchaseReceipt(PurchaseReceipt):
                     serial_number_doc.purchase_receipt = self.name
                     serial_number_doc.company = self.company
                     serial_number_doc.purchase_date = self.posting_date
-                    serial_number_doc.insert()
+                    serial_number_doc.status = _("without customs card")
+                    serial_number_doc.insert()  
+
+

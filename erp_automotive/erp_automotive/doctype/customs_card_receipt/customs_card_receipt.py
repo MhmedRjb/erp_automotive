@@ -7,8 +7,6 @@ import frappe
 
 class customscardreceipt(Document):
 	
-
-	
 	def validate(self):
 		for item in self.items:
 			if not frappe.db.exists("Serial No", item.serial_no):
@@ -21,3 +19,14 @@ class customscardreceipt(Document):
 	def on_submit(self):
 		for item in self.items:
 			frappe.db.set_value("Serial No", item.serial_no, "customs_card", item.customs_card)
+
+
+	def after_cancel(self):
+		pass
+
+	def before_cancel(self):
+		# print ("before_ cancel")
+		# print("===========================\n\n\n========================")
+		for item in self.items:
+			frappe.db.set_value("Serial No", item.serial_no, "customs_card", "get deleted")
+
