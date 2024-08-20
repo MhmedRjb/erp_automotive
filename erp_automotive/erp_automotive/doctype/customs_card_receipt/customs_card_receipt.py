@@ -6,6 +6,7 @@ from frappe.model.document import Document
 import frappe
 
 class customscardreceipt(Document):
+	
 
 	
 	def validate(self):
@@ -15,7 +16,7 @@ class customscardreceipt(Document):
 
 		for item in self.items:
 			if not item.customs_card:
-				frappe.throw(f"Customs Card {item.serial_no} does not exist")				
+				frappe.throw(f"Customs Card {item.serial_no} does not exist")	
 				
 	def on_submit(self):
 		for item in self.items:

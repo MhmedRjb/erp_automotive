@@ -111,8 +111,9 @@ doctype_js = {
 # Override standard doctype classes
 
 override_doctype_class = {
-    "Serial No": "erp_automotive.overrides.serial_no.CustomSerialNo"
+    "Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt"
 }
+
 
 # Document Events
 # ---------------
