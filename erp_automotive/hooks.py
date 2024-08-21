@@ -234,5 +234,8 @@ fixtures = [
             ]
         ]
     }
+,{
+        "dt": "Custom Field",
+}
 ]
 
