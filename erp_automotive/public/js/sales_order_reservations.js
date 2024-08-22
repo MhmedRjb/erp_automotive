@@ -12,7 +12,7 @@ frappe.ui.form.on('Sales Order', {
 });
 
 frappe.ui.form.on('Sales Order Item', {
-    custom_add_serials: async function(frm, cdt, cdn) {
+    custom_add_serials: async   function(frm, cdt, cdn) {
         let row = locals[cdt][cdn];        
         let d = new frappe.ui.Dialog({
             title: 'Reserved Serials',
@@ -48,7 +48,19 @@ frappe.ui.form.on('Sales Order Item', {
                             fieldname: 'serial_no',
                             label: 'Serial No',
                             options: 'Serial No',
-                            in_list_view: 1,
+                            get_query: () => {
+                                return {
+                                    filters: {
+                                        item_code: row.item_code
+                                    }
+                                };
+                            }
+                        },
+                        {
+                            fieldtype:'Data',
+                            fieldname :'test',
+                            label: 'tete No'
+
                         }
                     ]
                 }
