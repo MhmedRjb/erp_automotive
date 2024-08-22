@@ -34,6 +34,13 @@ frappe.ui.form.on('Sales Order Item', {
                     default: row.warehouse
                 },
                 {
+                    label: 'Quantity',
+                    fieldname: 'qty',
+                    fieldtype: 'Data',
+                    read_only: 1,
+                    default: row.qty
+                },
+                {
                     label: 'Serial Numbers',
                     fieldname: 'serial_numbers',
                     fieldtype: 'Table',
@@ -48,8 +55,11 @@ frappe.ui.form.on('Sales Order Item', {
                     ]
                 }
             ],
-            primary_action_label: 'Close',
+            primary_action_label: 'Save',
             primary_action(values) {
+                let serial_numbers =values.serial_numbers.map(row => row.serial_no)
+                console.log (serial_numbers)
+                    
                 d.hide();
             }
         });
