@@ -1,21 +1,19 @@
 frappe.ui.form.on('Sales Order', {
-	refresh(frm) {
-        
-	}
-})
-
-
-frappe.ui.form.on('Sales Order', {
-    refresh(frm) {
-        // your code here
+    refresh: function(frm) {
+        console.log("tesst"),
+        frm.set_query("custom_serial_no", "items", function (doc, cdt, cdn) {
+          return {
+            "filters": {
+              "item_name": "item_code"
+            },
+          };
+        });
     }
 });
 
 frappe.ui.form.on('Sales Order Item', {
     custom_add_serials: async function(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-        
-        // Create a dialog
+        let row = locals[cdt][cdn];        
         let d = new frappe.ui.Dialog({
             title: 'Reserved Serials',
             fields: [
@@ -50,16 +48,15 @@ frappe.ui.form.on('Sales Order Item', {
                             fieldname: 'serial_no',
                             label: 'Serial No',
                             options: 'Serial No',
-                            in_list_view: 1
+                            in_list_view: 1,
                         }
                     ]
                 }
             ],
             primary_action_label: 'Save',
             primary_action(values) {
-                let serial_numbers =values.serial_numbers.map(row => row.serial_no)
-                console.log (serial_numbers)
-                    
+                let serial_numbers = values.serial_numbers.map(row => row.serial_no);
+                console.log(serial_numbers);
                 d.hide();
             }
         });
