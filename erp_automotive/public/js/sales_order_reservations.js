@@ -11,16 +11,33 @@ frappe.ui.form.on('Sales Order', {
     }
 });
 
-frappe.ui.form.on("Sales Order Item", "custom_add_serials", function(frm, cdt, cdn) {
-    let row = locals[cdt][cdn];
-    console.log('Row:', row);
+frappe.ui.form.on("Sales Order Item", {
+    custom_add_serials: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        console.log('Row:', row);
 
-    // Check if custom_serial_no_saver is empty
-    let existingSerials = [];
-    if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
-        existingSerials = row.custom_serial_no_saver.split('\n').filter(Boolean).map(serial => ({ serial_no: serial }));
+        // Check if custom_serial_no_saver is empty
+        let existingSerials = [];
+        if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
+            existingSerials = row.custom_serial_no_saver.split('\n').filter(Boolean).map(serial => ({ serial_no: serial }));
+        }
+        
+        openSerialNumberDialog(frm, row, existingSerials);
+    },
+    custom_serial_no_saver: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        console.log('Serials changed:', row.custom_serial_no_saver);
+    
+        // Check and set reserve_stock based on custom_serial_no_saver
+        if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
+            row.reserve_stock = 0; // Unchecked
+        } else {
+            row.reserve_stock = 1; // Checked
+        }
+        // Refresh the field to reflect the change
+        frm.refresh_field('items');
+
     }
-    openSerialNumberDialog(frm, row, existingSerials);
 });
 
 // Function to open the dialog and add serial numbers
@@ -83,6 +100,14 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                 serials += item.serial_no + '\n';
             });
             row.custom_serial_no_saver = serials;
+
+            // Update reserve_stock based on custom_serial_no_saver
+            if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
+                row.reserve_stock = 0; // Unchecked
+            } else {
+                row.reserve_stock = 1; // Checked
+            }
+
             frm.refresh_field('items');
             d.hide();  
             console.log(row.custom_serial_no_saver);
@@ -90,3 +115,14 @@ function openSerialNumberDialog(frm, row, existingSerials) {
     });
     d.show();
 }
+
+function checkAndSetReserveStock(row) {
+    if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
+        row.reserve_stock = 1;
+    } else {
+        row.reserve_stock = 0;
+    }
+    // Refresh the field to reflect the change
+    cur_frm.refresh_field('items');
+}
+
