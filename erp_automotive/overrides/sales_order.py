@@ -11,9 +11,15 @@ from typing import Literal
 
 class CustomSalesOrder(SalesOrder):
 	def on_submit(self):
-		self.create_stock_reservation_entries(self.get("items"), "Purchase Receipt", True)
 
-	def create_stock_reservation_entries(
+        # Call the original on_submit method
+		super().on_submit()
+		
+		# Add your custom logic
+		self.test(self.get("items"), "Purchase Receipt", True)
+		
+		
+	def test(
 		self,
 		items_details: list[dict] | None = None,
 		from_voucher_type: Literal["Pick List", "Purchase Receipt"] = None,
@@ -24,31 +30,36 @@ class CustomSalesOrder(SalesOrder):
 		validate_stock_reservation_settings(self)
 
 
-		items = []		
+		items = []
+		
 		if items_details:
-			for item in items_details:
+			for item in items_details  :
 				so_item = frappe.get_doc("Sales Order Item", item.get("name"))
-				so_item.warehouse = item.get("warehouse")
-				so_item.qty_to_reserve = (
-					flt(item.get("qty_to_reserve"))
-					if from_voucher_type in ["Pick List", "Purchase Receipt"]
-					else (
+				if item.get("custom_serial_no_saver"):
+					so_item.warehouse = item.get("warehouse")
+					so_item.qty_to_reserve = (
 						flt(item.get("qty_to_reserve"))
-						* (flt(item.get("conversion_factor")) or flt(so_item.conversion_factor) or 1)
+						if from_voucher_type in ["Pick List", "Purchase Receipt"]
+						else (
+							flt(item.get("qty_to_reserve"))
+							* (flt(item.get("conversion_factor")) or flt(so_item.conversion_factor) or 1)
+						)
 					)
-				)
-				so_item.from_voucher_no = item.get("from_voucher_no")
-				so_item.from_voucher_detail_no = item.get("from_voucher_detail_no")
-				so_item.serial_and_batch_bundle = item.get("serial_and_batch_bundle")
-				so_item.custom_serial_no_saver =item.get("custom_serial_no_saver")
-				items.append(so_item)
+					so_item.from_voucher_no = item.get("from_voucher_no")
+					so_item.from_voucher_detail_no = item.get("from_voucher_detail_no")
+					so_item.serial_and_batch_bundle = item.get("serial_and_batch_bundle")
+					so_item.custom_serial_no_saver =item.get("custom_serial_no_saver")
+					items.append(so_item)
 
 		sre_count = 0
 		reserved_qty_details = get_sre_reserved_qty_details_for_voucher("Sales Order", self.name)
 
 		for item in items if items_details else self.get("items"):
-			if item.get("reserve_stock"):
-				continue			
+
+			# if item.get("reserve_stock"):
+			# 	continue
+
+
 			is_stock_item, has_serial_no, has_batch_no = frappe.get_cached_value(
 				"Item", item.item_code, ["is_stock_item", "has_serial_no", "has_batch_no"]
 			)
@@ -82,25 +93,25 @@ class CustomSalesOrder(SalesOrder):
 				sre.from_voucher_no = item.from_voucher_no
 				sre.from_voucher_detail_no = item.from_voucher_detail_no
 
+
 			if item.get("custom_serial_no_saver"):
 				serial_nos = item.custom_serial_no_saver.split('\n')
 				sre.reservation_based_on = "Serial and Batch"			
 				picked_qty = 0
 				for serial_no in serial_nos:
 					if serial_no:
-						print('if if serial_no if',serial_no)
 						sre.append(
 							"sb_entries",
 							{
 								"serial_no": serial_no,
-								"batch_no": None,  
-								"qty": 1, 
+								"batch_no": None,  # Assuming no batch number is provided
+								"qty": 1,  # Assuming each serial number represents one unit
 								"warehouse": item.warehouse,
 							},
 						)
 						picked_qty += 1
-				sre.save()
-				sre.submit()
+			sre.save()
+			sre.submit()
 			sre_count += 1
 
 	def on_cancel(self):
