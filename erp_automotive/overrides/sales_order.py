@@ -23,14 +23,10 @@ class CustomSalesOrder(SalesOrder):
 
 		validate_stock_reservation_settings(self)
 
-		allow_partial_reservation = frappe.db.get_single_value("Stock Settings", "allow_partial_reservation")
 
-		items = []
-		print("items_details",items_details)
-		
+		items = []		
 		if items_details:
 			for item in items_details:
-				print(item.get("item"))
 				so_item = frappe.get_doc("Sales Order Item", item.get("name"))
 				so_item.warehouse = item.get("warehouse")
 				so_item.qty_to_reserve = (
@@ -51,11 +47,8 @@ class CustomSalesOrder(SalesOrder):
 		reserved_qty_details = get_sre_reserved_qty_details_for_voucher("Sales Order", self.name)
 
 		for item in items if items_details else self.get("items"):
-
 			if item.get("reserve_stock"):
-				continue
-
-
+				continue			
 			is_stock_item, has_serial_no, has_batch_no = frappe.get_cached_value(
 				"Item", item.item_code, ["is_stock_item", "has_serial_no", "has_batch_no"]
 			)
@@ -100,8 +93,8 @@ class CustomSalesOrder(SalesOrder):
 							"sb_entries",
 							{
 								"serial_no": serial_no,
-								"batch_no": None,  # Assuming no batch number is provided
-								"qty": 1,  # Assuming each serial number represents one unit
+								"batch_no": None,  
+								"qty": 1, 
 								"warehouse": item.warehouse,
 							},
 						)
