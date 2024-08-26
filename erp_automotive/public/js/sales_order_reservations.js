@@ -37,8 +37,15 @@ frappe.ui.form.on("Sales Order Item", {
         // Refresh the field to reflect the change
         frm.refresh_field('items');
 
-    }
+    },
+    item_code: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        console.log('Item Code:', row.item_code);
+        //remove the custom_serial_no_saver
+        row.custom_serial_no_saver = '';
+    },
 });
+
 
 // Function to open the dialog and add serial numbers
 function openSerialNumberDialog(frm, row, existingSerials) {
