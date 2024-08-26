@@ -92,7 +92,9 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                         get_query: () => {
                             return {
                                 filters: {
-                                    item_code: row.item_code
+                                    item_code: row.item_code,
+                                    status: "Active",
+                                    custom_reservation_status:"un Reserved"
                                 }
                             };
                         }

@@ -24,25 +24,11 @@ class CustomStockReservationEntry(StockReservationEntry):
             sn_doc = frappe.get_doc("Serial No", sb.serial_no)
             sn_doc.custom_reservation_status = _("un Reserved")
             sn_doc.save()
-    # def on_update(self):
-    #     print("/n\n\n/n/n---====== End of New Entries ======---")
-    #     old_sb_entries = self.get_doc_before_save().sb_entries
-    #     for sb in old_sb_entries:
-
-    #         print(self.item_code, sb.serial_no)
-    #         sn_doc = frappe.get_doc("Serial No", sb.serial_no)
-    #         sn_doc.custom_reservation_status = _("Unreserved")
-    #         sn_doc.save()
-    #         #     print("---====== End of New Entries ======---")
-
 
     def on_update_after_submit(self):
-        print("---====== End of New Entries ======---")
         old_sb_entries = self.get_doc_before_save().sb_entries
         old_sb_entries = [sb.serial_no for sb in old_sb_entries]
         new_sb_entries = [sb.serial_no for sb in self.sb_entries]
-        #if old serial no is not in new serial no then update the status to unreserved
-        #and if new not in old then update the status to reserved
         for sb in old_sb_entries:
             if sb not in new_sb_entries:
                 print(self.item_code, sb,"un Reserved")
