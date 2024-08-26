@@ -226,22 +226,8 @@ override_doctype_class = {
 # Fixtures= ["Property Setter"]
 
 fixtures = [
-    # {
-    #     "dt": "Property Setter",
-    #     "filters": [
-    #         [
-    #             "module",
-    #             "in",
-    #             [
-    #                 "Erp Automotive",
-    #             ]
-    #         ]
-    #     ]
-    # }
-    # ,{
     {
-
-        "dt": "Custom Field",
+        "dt": "Property Setter",
         "filters": [
             [
                 "module",
@@ -250,6 +236,21 @@ fixtures = [
                     "Erp Automotive",
                 ]
             ]
-        ]}
+        ]
+    }
+    ,
+    # {
+    # {
+
+    #     "dt": "Custom Field",
+    #     "filters": [
+    #         [
+    #             "module",
+    #             "in",
+    #             [
+    #                 "Erp Automotive",
+    #             ]
+    #         ]
+    #     ]}
 ]
 
