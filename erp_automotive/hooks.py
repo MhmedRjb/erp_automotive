@@ -32,6 +32,8 @@ doctype_js = {
                 "Sales Order" : "public/js/sales_order_reservations.js"
                 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Serial No" : "public/js/serial_no_list.js"}
+
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -113,7 +115,8 @@ doctype_js = {
 
 override_doctype_class = {
     "Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt",
-    "Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder"
+    "Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder",
+    "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry"
 }
 
 
@@ -223,8 +226,22 @@ override_doctype_class = {
 # Fixtures= ["Property Setter"]
 
 fixtures = [
+    # {
+    #     "dt": "Property Setter",
+    #     "filters": [
+    #         [
+    #             "module",
+    #             "in",
+    #             [
+    #                 "Erp Automotive",
+    #             ]
+    #         ]
+    #     ]
+    # }
+    # ,{
     {
-        "dt": "Property Setter",
+
+        "dt": "Custom Field",
         "filters": [
             [
                 "module",
@@ -233,10 +250,6 @@ fixtures = [
                     "Erp Automotive",
                 ]
             ]
-        ]
-    }
-,{
-        "dt": "Custom Field",
-}
+        ]}
 ]
 
