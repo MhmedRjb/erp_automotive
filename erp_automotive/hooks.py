@@ -135,13 +135,13 @@ override_doctype_class = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"erp_automotive.tasks.all"
 # 	],
-# 	"daily": [
-# 		"erp_automotive.tasks.daily"
-# 	],
+	"daily": [
+		"erp_automotive.tasks.schelude_update"
+	]
 # 	"hourly": [
 # 		"erp_automotive.tasks.hourly"
 # 	],
@@ -151,7 +151,7 @@ override_doctype_class = {
 # 	"monthly": [
 # 		"erp_automotive.tasks.monthly"
 # 	],
-# }
+}
 
 # Testing
 # -------
