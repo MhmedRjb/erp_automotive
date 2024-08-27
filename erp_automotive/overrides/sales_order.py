@@ -114,7 +114,3 @@ class CustomSalesOrder(SalesOrder):
 			sre.submit()
 			sre_count += 1
 
-	def on_cancel(self):
-		pass
-
-

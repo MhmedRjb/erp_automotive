@@ -129,3 +129,4 @@ function checkAndSetReserveStock(row) {
     cur_frm.refresh_field('items');
 }
 
+

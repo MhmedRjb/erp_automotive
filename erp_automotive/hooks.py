@@ -140,7 +140,7 @@ scheduler_events = {
 # 		"erp_automotive.tasks.all"
 # 	],
 	"daily": [
-		"erp_automotive.tasks.schelude_update"
+		"erp_automotive.tasks.schedule_update"
 	]
 # 	"hourly": [
 # 		"erp_automotive.tasks.hourly"
@@ -225,21 +225,33 @@ scheduler_events = {
 
 # Fixtures= ["Property Setter"]
 
-fixtures = [
-    {
-        "dt": "Property Setter",
-        "filters": [
-            [
-                "module",
-                "in",
-                [
-                    "Erp Automotive",
-                ]
-            ]
-        ]
-    }
-    ,
+# fixtures = [
     # {
+    #     "dt": "Property Setter",
+    #     "filters": [
+    #         [
+    #             "module",
+    #             "in",
+    #             [
+    #                 "Erp Automotive",
+    #             ]
+    #         ]
+    #     ]
+    # }
+    # ,
+
+    # {
+    #     "dt": "DocType",
+    #     "filters": [
+    #         [
+    #             "module",
+    #             "in",
+    #             [
+    #                 "Erp Automotive",
+    #             ]
+    #         ]
+    #     ]
+    # }
     # {
 
     #     "dt": "Custom Field",
@@ -252,5 +264,5 @@ fixtures = [
     #             ]
     #         ]
     #     ]}
-]
+# ]
 
