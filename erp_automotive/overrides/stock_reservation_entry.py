@@ -6,8 +6,11 @@ import frappe
 from frappe.query_builder import DocType
 from frappe.utils import now_datetime, add_days
 
+
 class CustomStockReservationEntry(StockReservationEntry):
+	pass
 	def __init__(self, *args, **kwargs):
+		
 		super().__init__(*args, **kwargs)
 
 	def on_submit(self):

@@ -14,9 +14,6 @@ frappe.ui.form.on('Sales Order', {
 frappe.ui.form.on("Sales Order Item", {
     custom_add_serials: function(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
-        console.log('Row:', row);
-
-        // Check if custom_serial_no_saver is empty
         let existingSerials = [];
         if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
             existingSerials = row.custom_serial_no_saver.split('\n').filter(Boolean).map(serial => ({ serial_no: serial }));
@@ -26,13 +23,11 @@ frappe.ui.form.on("Sales Order Item", {
     },
     custom_serial_no_saver: function(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
-        console.log('Serials changed:', row.custom_serial_no_saver);
     
-        // Check and set reserve_stock based on custom_serial_no_saver
         if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
-            row.reserve_stock = 0; // Unchecked
+            row.reserve_stock = 0; 
         } else {
-            row.reserve_stock = 1; // Checked
+            row.reserve_stock = 1; 
         }
         // Refresh the field to reflect the change
         frm.refresh_field('items');
@@ -89,6 +84,9 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                         label: __("serial no"),
                         options: "Serial No",
                         in_list_view: 1,
+                        onchange: () => {
+                            checkAndSetReserveStock(row);
+                            },
                         get_query: () => {
                             return {
                                 filters: {
@@ -109,6 +107,22 @@ function openSerialNumberDialog(frm, row, existingSerials) {
             row.custom_serial_no_saver = serials;
             row.reserve_stock = serials.length > 0 ? 0 : 1; 
 
+        
+
+        let uniqueSerials = new Set(serials.split('\n'));
+        if (uniqueSerials.size !== serials.split('\n').length) {
+            
+            var uniqueSerialsArray = Array.from(uniqueSerials);
+            frappe.msgprint(__('Duplicate serial numbers are not allowed.'));
+            // d.set_value('serial_no', 0);
+            // // frm.set_value('serial_no', '');
+            // frm.refresh_field('serial_no');
+            // frm.set_value('custom_serial_no_saver', uniqueSerialsArray.join('\n'));
+            return;
+        }
+
+
+
             frm.refresh_field('items');
 
             d.hide();  
@@ -116,6 +130,11 @@ function openSerialNumberDialog(frm, row, existingSerials) {
     });
     d.show();
 }
+
+
+
+
+
 
 
 
