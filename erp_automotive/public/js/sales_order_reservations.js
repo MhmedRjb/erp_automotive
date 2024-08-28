@@ -11,20 +11,42 @@ frappe.ui.form.on('Sales Order', {
     }
 });
 
-frappe.ui.form.on("Sales Order Item", "custom_add_serials", function(frm, cdt, cdn) {
-    let row = locals[cdt][cdn];
-    console.log('Row:', row);
+frappe.ui.form.on("Sales Order Item", {
+    custom_add_serials: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        let existingSerials = [];
+        if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
+            existingSerials = row.custom_serial_no_saver.split('\n').filter(Boolean).map(serial => ({ serial_no: serial }));
+        }
+        
+        openSerialNumberDialog(frm, row, existingSerials);
+    },
+    custom_serial_no_saver: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+    
+        if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
+            row.reserve_stock = 0; 
+        } else {
+            row.reserve_stock = 1; 
+        }
+        // Refresh the field to reflect the change
+        frm.refresh_field('items');
 
-    // Check if custom_serial_no_saver is empty
-    let existingSerials = [];
-    if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
-        existingSerials = row.custom_serial_no_saver.split('\n').filter(Boolean).map(serial => ({ serial_no: serial }));
-    }
-    openSerialNumberDialog(frm, row, existingSerials);
+    },
+    item_code: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        console.log('Item Code:', row.item_code);
+        //remove the custom_serial_no_saver
+        row.custom_serial_no_saver = '';
+    },
+
+
 });
+
 
 // Function to open the dialog and add serial numbers
 function openSerialNumberDialog(frm, row, existingSerials) {
+
     let d = new frappe.ui.Dialog({
         title: 'Reserved Serials',
         size: 'extra-large',
@@ -66,7 +88,9 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                         get_query: () => {
                             return {
                                 filters: {
-                                    item_code: row.item_code
+                                    item_code: row.item_code,
+                                    status: "Active",
+                                    custom_reservation_status:"un Reserved"
                                 }
                             };
                         }
@@ -76,17 +100,52 @@ function openSerialNumberDialog(frm, row, existingSerials) {
         ],
         primary_action_label: 'Submit',
         primary_action(values) {
-            console.log('Dialog Values:', values);
-            let items = d.get_values().items;
-            let serials = '';
-            items.forEach(function(item) {
-                serials += item.serial_no + '\n';
-            });
+        let items = d.get_values().items;
+        let serials = items.map(item => item.serial_no).join('\n'); 
             row.custom_serial_no_saver = serials;
+            row.reserve_stock = serials.length > 0 ? 0 : 1; 
+
+        
+
+        let uniqueSerials = new Set(serials.split('\n'));
+        if (uniqueSerials.size !== serials.split('\n').length) {
+            
+            var uniqueSerialsArray = Array.from(uniqueSerials);
+            console.log('uniqueSerialsArray:', uniqueSerialsArray);
+            frappe.msgprint(__('Duplicate serial numbers are not allowed.'));
+            serials=d.get_values().items;
+            d.set_value('items', uniqueSerialsArray);
+            console.log('uniquessssSerials:', uniqueSerials);
+            console.log('doc.get_values().items:', serials);
+            return;
+        }
+
+
+
             frm.refresh_field('items');
+
             d.hide();  
-            console.log(row.custom_serial_no_saver);
         }
     });
+
     d.show();
 }
+
+
+
+
+
+
+
+
+
+function checkAndSetReserveStock(row) {
+    if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
+        row.reserve_stock = 1;
+    } else {
+        row.reserve_stock = 0;
+    }
+    cur_frm.refresh_field('items');
+}
+
+

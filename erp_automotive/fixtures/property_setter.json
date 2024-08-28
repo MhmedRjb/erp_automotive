@@ -23,12 +23,44 @@
   "doctype_or_field": "DocField",
   "field_name": "status",
   "is_system_generated": 0,
-  "modified": "2024-08-20 14:33:41.299197",
+  "modified": "2024-08-26 13:44:55.956055",
   "module": "Erp Automotive",
   "name": "Serial No-status-options",
   "property": "options",
   "property_type": "Text",
   "row_name": null,
-  "value": "\nActive\nInactive\nDelivered\nExpired\nwithout customs card"
+  "value": "\nActive\nInactive\nDelivered\nExpired\nReserved\nwithout customs card"
+ },
+ {
+  "default_value": "1",
+  "doc_type": "Sales Order",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "reserve_stock",
+  "is_system_generated": 0,
+  "modified": "2024-08-26 16:25:40.164074",
+  "module": "Erp Automotive",
+  "name": "Sales Order-reserve_stock-default",
+  "property": "default",
+  "property_type": "Text ",
+  "row_name": null,
+  "value": "1"
+ },
+ {
+  "default_value": "1",
+  "doc_type": "Sales Order",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "reserve_stock",
+  "is_system_generated": 0,
+  "modified": "2024-08-26 16:29:14.907357",
+  "module": "Erp Automotive",
+  "name": "Sales Order-reserve_stock-hidden",
+  "property": "hidden",
+  "property_type": "Check",
+  "row_name": null,
+  "value": "1"
  }
 ]

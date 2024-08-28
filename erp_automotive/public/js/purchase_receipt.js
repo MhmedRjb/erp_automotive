@@ -1,33 +1,47 @@
 frappe.ui.form.on('Purchase Receipt', {
     refresh: function(frm) {
         console.log(frm);
-        // if (frm.doc.status === "Draft") { }
-            frm.add_custom_button(__('Create Customs Card Receipt'), function(){
-                frappe.new_doc('customs card receipt', {}, inv => {
-                    inv.supplier = frm.doc.supplier;
-                    inv.purchase_receipt_no= frm.doc.name;
-                    inv.supplier_delivery_note = frm.doc.supplier_delivery_note;
-                    frm.doc.items.forEach(item => {
-                        // Check if the item has serial numbers
-                        if (item.serial_no) {
-                            // Split the serial numbers based on the quantity
-                            let serial_numbers = item.serial_no.split('\n');
-                            for (let i = 0; i < item.qty; i++) {
-                                let inv_item = frappe.model.add_child(inv, 'items');
-                                inv_item.item_code = item.item_code;
-                                inv_item.serial_no = serial_numbers[i] || ''; // Assign serial number or empty string if not available
-                                inv_item.customs_card = item.customs_card;
-                            }
-                        } else {
-                            // If no serial numbers, add the item only once
-                            let inv_item = frappe.model.add_child(inv, 'items');
-                            inv_item.item_code = item.item_code;
-                            inv_item.serial_no = '555555555'; // No serial number
-                            inv_item.customs_card = item.customs_card;
+        
+        frm.add_custom_button(__('Create Customs Card Receipt'), function() {
+            // Create new Customs Card Receipt
+            frappe.new_doc('customs card receipt', {}, doc => {
+                doc.supplier = frm.doc.supplier;
+                doc.purchase_receipt_no = frm.doc.name;
+                doc.supplier_delivery_note = frm.doc.supplier_delivery_note;
+                frm.doc.items.forEach(item => {
+                    let serial_numbers = item.serial_no.split('\n');
+                    serial_numbers.forEach((serial_no, index) => {
+                        if (index < item.qty) {
+                            // Fetch customs_card using serial_no
+                            frappe.call({
+                                method: 'frappe.client.get_value',
+                                args: {
+                                    doctype: 'Serial No',
+                                    filters: { name: serial_no },
+                                    fieldname: 'customs_card'
+                                },
+                                async: false, // Note: Using async: false is not recommended for production; handle promises properly.
+                                callback: function(response) {
+                                    let customs_card = response.message ? response.message.customs_card : '';
+                                    if  (!customs_card) {
+                                        let inv_item = frappe.model.add_child(doc, 'items');
+                                        inv_item.item_code = item.item_code;
+                                        inv_item.serial_no = serial_no || ''; 
+                                        inv_item.customs_card = customs_card;
+    
+                                    }
+                                }
+                            });
                         }
                     });
                 });
-                // frappe.msgprint("Customs Card Receipt created!");
-            }, __("Create"));
+                frappe.get_doc('customs card receipt', doc.name).save().then(() => {
+                    frappe.msgprint(__('Customs Card Receipt created!'));
+                }).catch((error) => {
+                    console.error('Error creating Customs Card Receipt:', error);
+                    frappe.msgprint(__('An error occurred while creating the Customs Card Receipt.'));
+                });
+            });
+        }, __("Create"));
     }
 });

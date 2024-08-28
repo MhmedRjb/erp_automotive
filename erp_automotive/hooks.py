@@ -29,9 +29,12 @@ app_license = "MIT"
 # include js in doctype views
 doctype_js = {
                 "Purchase Receipt" : "public/js/purchase_receipt.js",
-                "Sales Order" : "public/js/sales_order_reservations.js"
+                "Sales Order" : "public/js/sales_order_reservations.js",
+                "Stock Reservation Entry" : "public/js/stock_reservation_entry.js",
                 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+# doctype_list_js = {"Serial No" : "public/js/serial_no_list.js"}
+
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -112,7 +115,9 @@ doctype_js = {
 # Override standard doctype classes
 
 override_doctype_class = {
-    "Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt"
+    "Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt",
+    "Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder",
+    "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry"
 }
 
 
@@ -131,13 +136,13 @@ override_doctype_class = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"erp_automotive.tasks.all"
 # 	],
-# 	"daily": [
-# 		"erp_automotive.tasks.daily"
-# 	],
+	"daily": [
+		"erp_automotive.tasks.schedule_update"
+	]
 # 	"hourly": [
 # 		"erp_automotive.tasks.hourly"
 # 	],
@@ -147,7 +152,7 @@ override_doctype_class = {
 # 	"monthly": [
 # 		"erp_automotive.tasks.monthly"
 # 	],
-# }
+}
 
 # Testing
 # -------
@@ -221,21 +226,43 @@ override_doctype_class = {
 
 # Fixtures= ["Property Setter"]
 
-fixtures = [
-    {
-        "dt": "Property Setter",
-        "filters": [
-            [
-                "module",
-                "in",
-                [
-                    "Erp Automotive",
-                ]
-            ]
-        ]
-    }
-,{
-        "dt": "Custom Field",
-}
-]
+# fixtures = [
+    # {
+    #     "dt": "Property Setter",
+    #     "filters": [
+    #         [
+    #             "module",
+    #             "in",
+    #             [
+    #                 "Erp Automotive",
+    #             ]
+    #         ]
+    #     ]
+    # }
+    # ,
 
+    # {
+    #     "dt": "DocType",
+    #     "filters": [
+    #         [
+    #             "module",
+    #             "in",
+    #             [
+    #                 "Erp Automotive",
+    #             ]
+    #         ]
+    #     ]
+    # }
+    # {
+
+    #     "dt": "Custom Field",
+    #     "filters": [
+    #         [
+    #             "module",
+    #             "in",
+    #             [
+    #                 "Erp Automotive",
+    #             ]
+    #         ]
+    #     ]}
+# ]
