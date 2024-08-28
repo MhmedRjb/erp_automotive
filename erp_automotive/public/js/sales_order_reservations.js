@@ -46,6 +46,7 @@ frappe.ui.form.on("Sales Order Item", {
 
 // Function to open the dialog and add serial numbers
 function openSerialNumberDialog(frm, row, existingSerials) {
+
     let d = new frappe.ui.Dialog({
         title: 'Reserved Serials',
         size: 'extra-large',
@@ -84,9 +85,6 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                         label: __("serial no"),
                         options: "Serial No",
                         in_list_view: 1,
-                        onchange: () => {
-                            checkAndSetReserveStock(row);
-                            },
                         get_query: () => {
                             return {
                                 filters: {
@@ -113,11 +111,12 @@ function openSerialNumberDialog(frm, row, existingSerials) {
         if (uniqueSerials.size !== serials.split('\n').length) {
             
             var uniqueSerialsArray = Array.from(uniqueSerials);
+            console.log('uniqueSerialsArray:', uniqueSerialsArray);
             frappe.msgprint(__('Duplicate serial numbers are not allowed.'));
-            // d.set_value('serial_no', 0);
-            // // frm.set_value('serial_no', '');
-            // frm.refresh_field('serial_no');
-            // frm.set_value('custom_serial_no_saver', uniqueSerialsArray.join('\n'));
+            serials=d.get_values().items;
+            d.set_value('items', uniqueSerialsArray);
+            console.log('uniquessssSerials:', uniqueSerials);
+            console.log('doc.get_values().items:', serials);
             return;
         }
 
@@ -128,6 +127,7 @@ function openSerialNumberDialog(frm, row, existingSerials) {
             d.hide();  
         }
     });
+
     d.show();
 }
 
