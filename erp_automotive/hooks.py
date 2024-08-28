@@ -133,6 +133,15 @@ override_doctype_class = {
 # 	}
 # }
 
+# doc_events = {
+#     'customs card': {
+#         'on_submit': [
+#             'erp_automotive.doctype.customs_card.customs_card.on_submit'
+#         ]
+#     },
+# }
+
+
 # Scheduled Tasks
 # ---------------
 

@@ -9,15 +9,13 @@
   "section_break_fx6v",
   "customs_card_number",
   "customs_card_date",
-  "column_break_kaiq",
+  "iamge",
+  "column_break_aobf",
   "customs_declaration_number",
   "customs_declaration_date",
   "customs_duties",
-  "car_detailes",
-  "car_type",
-  "column_break_vayj",
-  "country_of_manufacture",
-  "amended_from"
+  "section_break_fx6v2",
+  "item_variant_attribute"
  ],
  "fields": [
   {
@@ -32,63 +30,55 @@
    "unique": 1
   },
   {
-   "fieldname": "column_break_kaiq",
-   "fieldtype": "Column Break"
-  },
-  {
+   "allow_on_submit": 1,
    "fieldname": "customs_card_date",
    "fieldtype": "Date",
    "label": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0628\u0637\u0627\u0642\u0629 \u0627\u0644\u062c\u0645\u0631\u0643\u064a\u0629"
   },
   {
+   "allow_on_submit": 1,
+   "fieldname": "iamge",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "allow_on_submit": 1,
    "fieldname": "customs_declaration_number",
    "fieldtype": "Date",
    "label": "\u0631\u0642\u0645 \u0627\u0644\u0628\u064a\u0627\u0646 \u0627\u0644\u062c\u0645\u0631\u0643\u064a"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "customs_declaration_date",
    "fieldtype": "Date",
    "label": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0628\u064a\u0627\u0646 \u0627\u0644\u062c\u0645\u0631\u0643\u064a"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "customs_duties",
    "fieldtype": "Data",
    "label": "\u0627\u0644\u0631\u0633\u0648\u0645 \u0627\u0644\u062c\u0645\u0631\u0643\u064a\u0629"
   },
   {
-   "fieldname": "car_detailes",
+   "fieldname": "section_break_fx6v2",
    "fieldtype": "Section Break",
    "label": "\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0633\u064a\u0627\u0631\u0629"
   },
   {
-   "fieldname": "car_type",
-   "fieldtype": "Date",
-   "label": "\u0646\u0648\u0639 \u0627\u0644\u0633\u064a\u0627\u0631\u0629"
+   "fieldname": "item_variant_attribute",
+   "fieldtype": "Table",
+   "label": "Item Variant Attribute",
+   "options": "Item Variant Attribute"
   },
   {
-   "fieldname": "column_break_vayj",
+   "fieldname": "column_break_aobf",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "country_of_manufacture",
-   "fieldtype": "Data",
-   "label": "\u0628\u0644\u062f \u0627\u0644\u0635\u0646\u0639"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "customs card",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-28 13:27:06.280804",
+ "modified": "2024-08-28 16:39:16.276839",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "customs card",
