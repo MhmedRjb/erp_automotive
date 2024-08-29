@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestCustomizeForm(FrappeTestCase):
+class TestDeliveryNoteforCustomsCard(FrappeTestCase):
 	pass
