@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-08-29 09:24:30.750088",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "delivery_note",
+  "customs_card",
+  "holder_now",
+  "date",
+  "column_break_duxr",
+  "part_type",
+  "party_name",
+  "section_break_tzeg",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_tzeg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Delivery Note for Customs Card",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Section Break",
+   "label": "Delivery Note"
+  },
+  {
+   "fieldname": "customs_card",
+   "fieldtype": "Link",
+   "label": "customs card",
+   "options": "customs card"
+  },
+  {
+   "fieldname": "column_break_duxr",
+   "fieldtype": "Column Break",
+   "label": "deliver to "
+  },
+  {
+   "fieldname": "part_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Party Type",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "party_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Party_name",
+   "mandatory_depends_on": "part_type",
+   "options": "part_type",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "mandatory_depends_on": "customs_card"
+  },
+  {
+   "default": "first-hand",
+   "fieldname": "holder_now",
+   "fieldtype": "Data",
+   "label": "holder now"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-08-29 11:45:16.898111",
+ "modified_by": "Administrator",
+ "module": "Erp Automotive",
+ "name": "Delivery Note for Customs Card",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -15,7 +15,15 @@
   "customs_declaration_date",
   "customs_duties",
   "section_break_fx6v2",
-  "item_variant_attribute"
+  "item_variant_attribute",
+  "owne_section",
+  "previous_holder",
+  "column_break_dakm",
+  "date",
+  "column_break_uhyf",
+  "current_holder",
+  "section_break_izsk",
+  "amended_from"
  ],
  "fields": [
   {
@@ -73,12 +81,60 @@
   {
    "fieldname": "column_break_aobf",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "owne_section",
+   "fieldtype": "Section Break",
+   "label": "transection data"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "received date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_dakm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "current_holder",
+   "fieldtype": "Data",
+   "label": "Current Holder",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "customs card",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_izsk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "previous_holder",
+   "fieldtype": "Data",
+   "label": "Previous Holder",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_uhyf",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-28 16:39:16.276839",
+ "modified": "2024-08-29 12:27:01.281424",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "customs card",
