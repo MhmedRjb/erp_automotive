@@ -32,4 +32,15 @@ frappe.ui.form.on("Delivery Note for Customs Card", {
             });
         }
     }
+<<<<<<< HEAD
 });
+=======
+
+
+
+
+});
+
+
+ 
+>>>>>>> origin/before-merger
