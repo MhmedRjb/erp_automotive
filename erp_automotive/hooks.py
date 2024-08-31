@@ -28,10 +28,10 @@ app_license = "MIT"
 
 # include js in doctype views
 doctype_js = {
-                "Purchase Receipt" : "public/js/purchase_receipt.js",
-                "Sales Order" : "public/js/sales_order_reservations.js",
-                "Stock Reservation Entry" : "public/js/stock_reservation_entry.js",
-                }
+				"Purchase Receipt" : "public/js/purchase_receipt.js",
+				"Sales Order" : "public/js/sales_order_reservations.js",
+				"Stock Reservation Entry" : "public/js/stock_reservation_entry.js",
+				}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_list_js = {"Serial No" : "public/js/serial_no_list.js"}
 
@@ -115,9 +115,9 @@ doctype_js = {
 # Override standard doctype classes
 
 override_doctype_class = {
-    "Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt",
-    "Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder",
-    "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry"
+	"Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt",
+	"Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder",
+	"Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry"
 }
 
 
@@ -236,33 +236,33 @@ scheduler_events = {
 # Fixtures= ["Property Setter"]
 
 # fixtures = [{"dt": "Custom Field"}]
-    #     "dt": "Property Setter",
-    #     "filters": [
-    #         [
-    #             "module",
-    #             "in",
-    #             [
-    #                 "Erp Automotive",
-    #             ]
-    #         ]
-    #     ]
-    # }
-    # ,
+	#     "dt": "Property Setter",
+	#     "filters": [
+	#         [
+	#             "module",
+	#             "in",
+	#             [
+	#                 "Erp Automotive",
+	#             ]
+	#         ]
+	#     ]
+	# }
+	# ,
 
-    # {
-    #     "dt": "DocType",
-    #     "filters": [
-    #         [
-    #             "module",
-    #             "in",
-    #             [
-    #                 "Erp Automotive",
-    #             ]
-    #         ]
-    #     ]
-    # }
-    # {
+	# {
+	#     "dt": "DocType",
+	#     "filters": [
+	#         [
+	#             "module",
+	#             "in",
+	#             [
+	#                 "Erp Automotive",
+	#             ]
+	#         ]
+	#     ]
+	# }
+	# {
 
-        
+		
 # ]
 

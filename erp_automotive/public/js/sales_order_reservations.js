@@ -1,15 +1,60 @@
+// frappe.ui.form.on('Sales Order', {
+//     custom_item_group: async function(frm) {
+//         console.log("custom_item_group");
+//         try {
+//             let items = await frappe.db.get_list('Item', {
+//                 filters: {'item_group': frm.doc.custom_item_group },
+//                 fields: ['name']
+//             });
+//             let itemNames = items.map(item => item.name);
+//             frm.set_df_property('custom_color', 'options', [""].concat(itemNames));
+//             frm.refresh_field('custom_color');
+//         } catch (error) {
+//             console.error("Error fetching items:", error);
+//         }
+//     }
+// });
+// frappe.ui.form.on('Sales Order', {
+//     custom_item_group: async function(frm) {
+//         frappe.call({
+//             method: 'frappe.client.get_list',
+//             args:{
+//                 'doctype': 'Item',
+//                 'filters': {'item_group': frm.doc.custom_item_group },
+//                 'fields': ['item_code']
+//             },
+//             callback: function(response) {
+//                 let itemNames = response.message.map(item => item.item_code);
+//                 frm.set_df_property('custom_colour', 'options', [""].concat(itemNames));
+//                 frm.refresh_field('custom_colour');
+//             }
+
+//         });
+
+//     }
+// });
 frappe.ui.form.on('Sales Order', {
-    refresh: function(frm) {
-        console.log("tesst");
-        frm.set_query("custom_serial_no", "items", function (doc, cdt, cdn) {
-          return {
-            "filters": {
-              "item_name": "item_code"
+    custom_item_group: async function(frm) {
+        frappe.call({
+            method: 'erp_automotive.api.type_list',
+            args:{
+                item_group: frm.doc.custom_item_group,
             },
-          };
+            callback: function(response) {
+                console.log('response:', response);
+                
+                let itemNames = response.message;
+                console.log('itemNames:', itemNames);
+                frm.set_df_property('custom_type', 'options', itemNames);
+                frm.refresh_field('custom_type');
+            }
+
         });
+
     }
 });
+
+
 
 frappe.ui.form.on("Sales Order Item", {
     custom_add_serials: function(frm, cdt, cdn) {
@@ -29,7 +74,6 @@ frappe.ui.form.on("Sales Order Item", {
         } else {
             row.reserve_stock = 1; 
         }
-        // Refresh the field to reflect the change
         frm.refresh_field('items');
 
     },
