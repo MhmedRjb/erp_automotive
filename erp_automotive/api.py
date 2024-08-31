@@ -1,7 +1,5 @@
 import frappe
 from frappe import _
-from frappe.utils import flt, cint, cstr
-from erpnext.stock.doctype.item.item import get_item_defaults
 
 # @frappe.whitelist()
 # def get_items(attribute):
@@ -72,47 +70,93 @@ from erpnext.stock.doctype.item.item import get_item_defaults
 
 # 	return category_list
 	
+# @frappe.whitelist()
+# def filter_by_item_group(item_group):
+# 	query = """
+# 		SELECT distinct
+# 			t1.name AS parent,
+# 			t1.item_group,
+# 			MAX(CASE WHEN t2.attribute = 'model' THEN t2.attribute_value ELSE NULL END) AS model,
+# 			MAX(CASE WHEN t2.attribute = 'category' THEN t2.attribute_value ELSE NULL END) AS category,
+# 			MAX(CASE WHEN t2.attribute = 'type' THEN t2.attribute_value ELSE NULL END) AS type,
+# 			MAX(CASE WHEN t2.attribute = 'Colour' THEN t2.attribute_value ELSE NULL END) AS colour
+# 		FROM 
+# 			`tabItem` t1
+# 		LEFT JOIN 
+# 			`tabItem Variant Attribute` t2 ON t1.name = t2.parent
+# 		WHERE 
+# 			t1.item_group = %s
+# 		GROUP BY 
+# 			t1.name, t1.item_group
+# 	"""
+# 	print(query)
+# 	results = frappe.db.sql(query, item_group, as_list=1)
+# 	return results
+
+
 @frappe.whitelist()
-def filter_by_item_group(item_group):
-	query = """
-		SELECT distinct
-			t1.name AS parent,
-			t1.item_group,
-			MAX(CASE WHEN t2.attribute = 'model' THEN t2.attribute_value ELSE NULL END) AS model,
-			MAX(CASE WHEN t2.attribute = 'category' THEN t2.attribute_value ELSE NULL END) AS category,
-			MAX(CASE WHEN t2.attribute = 'type' THEN t2.attribute_value ELSE NULL END) AS type,
-			MAX(CASE WHEN t2.attribute = 'Colour' THEN t2.attribute_value ELSE NULL END) AS colour
-		FROM 
-			`tabItem` t1
-		LEFT JOIN 
-			`tabItem Variant Attribute` t2 ON t1.name = t2.parent
-		WHERE 
-			t1.item_group = %s
-		GROUP BY 
-			t1.name, t1.item_group
-	"""
-	results = frappe.db.sql(query, item_group, as_list=1)
-	type_list = [item[2] for item in results if item[0] is not None]
+def type_list(item_group, type=None, category=None, model=None, colour=None, item=None):
+    query = """
+        SELECT distinct
+            t1.name AS parent,
+            t1.item_group,
+            MAX(CASE WHEN t2.attribute = 'model' THEN t2.attribute_value ELSE NULL END) AS model,
+            MAX(CASE WHEN t2.attribute = 'category' THEN t2.attribute_value ELSE NULL END) AS category,
+            MAX(CASE WHEN t2.attribute = 'type' THEN t2.attribute_value ELSE NULL END) AS type,
+            MAX(CASE WHEN t2.attribute = 'Colour' THEN t2.attribute_value ELSE NULL END) AS colour
+        FROM 
+            `tabItem` t1
+        LEFT JOIN 
+            `tabItem Variant Attribute` t2 ON t1.name = t2.parent
+        WHERE 
+            t1.item_group = %s and t1.disabled = 0 
+        GROUP BY 
+            t1.name, t1.item_group
+    """
+    print("Executing query:", query)
+    results = frappe.db.sql(query, item_group, as_list=1)
+    print("Query results:", results)
 
-	return results
+    items = results
 
+    if type is None:
+        type_list = list(set(item[4] for item in items if item[4] is not None))
+        print("Distinct types:", type_list)
+        return type_list
 
-@frappe.whitelist()
-def type_list(item_group, type=None, category=None,model=None,colour=None):
-	items = filter_by_item_group(item_group)
-	if type is None:
-		type_list = list(set(item[4] for item in items if item[0] is not None))
-		return type_list
-	elif category is None:
-		category_list = list(set(item[3] for item in items if item[0] is not None))
-		return category_list
-	elif model is None:
-		model_list = list(set(item[2] for item in items if item[0] is not None))
-		return model_list
-	elif colour is None:
-		colour_list = list(set(item[5] for item in items if item[0] is not None))
-		return colour_list
-	
+    filtered_items = [item for item in items if item[4] == type]
+
+    if category is None:
+        category_list = list(set(item[3] for item in filtered_items if item[3] is not None))
+        print("Distinct categories:", category_list)
+        return category_list
+
+    filtered_items = [item for item in filtered_items if item[3] == category]
+
+    if model is None:
+        model_list = list(set(item[2] for item in filtered_items if item[2] is not None))
+        print("Distinct models:", model_list)
+        return model_list
+
+    filtered_items = [item for item in filtered_items if item[2] == model]
+
+    if colour is None:
+        colour_list = list(set(item[5] for item in filtered_items if item[5] is not None))
+        print("Distinct colours:", colour_list)
+        return colour_list
+
+    filtered_items = [item for item in filtered_items if item[5] == colour]
+
+    if item is None:
+        item_list = list(set(item[0] for item in filtered_items if item[0] is not None))
+        print("Distinct items:", item_list)
+        #make it value without list
+        item_list = item_list[0]
+        return item_list
+
+    filtered_items = [item for item in filtered_items if item[0] == item]
+
+    return filtered_items
 
 # @frappe.whitelist()
 # def category_list(item_group, custom_type):
