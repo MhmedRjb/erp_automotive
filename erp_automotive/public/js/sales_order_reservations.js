@@ -51,7 +51,67 @@ frappe.ui.form.on('Sales Order', {
 
         });
 
-    }
+    },
+    custom_type: async function(frm) {
+        frappe.call({
+            method: 'erp_automotive.api.type_list',
+            args:{
+                item_group: frm.doc.custom_item_group,
+                type: frm.doc.custom_type,
+            },
+            callback: function(response) {
+                console.log('response:', response);
+                
+                let itemNames = response.message;
+                console.log('itemNames:', itemNames);
+                frm.set_df_property('custom_category', 'options', itemNames);
+                frm.refresh_field('custom_category');
+            }
+
+        });
+
+    },
+    custom_category: async function(frm) {
+        frappe.call({
+            method: 'erp_automotive.api.type_list',
+            args:{
+                item_group: frm.doc.custom_item_group,
+                type: frm.doc.custom_type,
+                category: frm.doc.custom_category,
+            },
+            callback: function(response) {
+                console.log('response:', response);
+                
+                let itemNames = response.message;
+                console.log('itemNames:', itemNames);
+                frm.set_df_property('custom_model', 'options', itemNames);
+                frm.refresh_field('custom_model');
+            }
+
+        });
+
+    },
+    custom_model: async function(frm) {
+        frappe.call({
+            method: 'erp_automotive.api.type_list',
+            args:{
+                item_group: frm.doc.custom_item_group,
+                type: frm.doc.custom_type,
+                category: frm.doc.custom_category,
+                model: frm.doc.custom_model,
+            },
+            callback: function(response) {
+                console.log('response:', response);
+                
+                let itemNames = response.message;
+                console.log('itemNames:', itemNames);
+                frm.set_df_property('custom_colour', 'options', itemNames);
+                frm.refresh_field('custom_colour');
+            }
+
+        });
+
+    },
 });
 
 

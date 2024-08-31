@@ -98,22 +98,33 @@ def filter_by_item_group(item_group):
 
 
 @frappe.whitelist()
-def type_list(item_group):
+def type_list(item_group, type=None, category=None,model=None,colour=None):
 	items = filter_by_item_group(item_group)
-	type_list = list(set(item[2] for item in items if item[0] is not None))
-	return type_list
+	if type is None:
+		type_list = list(set(item[4] for item in items if item[0] is not None))
+		return type_list
+	elif category is None:
+		category_list = list(set(item[3] for item in items if item[0] is not None))
+		return category_list
+	elif model is None:
+		model_list = list(set(item[2] for item in items if item[0] is not None))
+		return model_list
+	elif colour is None:
+		colour_list = list(set(item[5] for item in items if item[0] is not None))
+		return colour_list
+	
 
-@frappe.whitelist()
-def category_list(item_group, custom_type):
-	items = filter_by_custom_type(item_group, custom_type)
-	category_list = list(set(item[3] for item in items if item[0] is not None))
-	return category_list
+# @frappe.whitelist()
+# def category_list(item_group, custom_type):
+# 	items = filter_by_custom_type(item_group, custom_type)
+# 	category_list = list(set(item[3] for item in items if item[0] is not None))
+# 	return category_list
 
 
-def filter_by_custom_type(item_group, custom_type):
-	items = filter_by_item_group(item_group)
-	return [item for item in items if item['type'] == custom_type]
+# def filter_by_custom_type(item_group, custom_type):
+# 	items = filter_by_item_group(item_group)
+# 	return [item for item in items if item['type'] == custom_type]
 
-def filter_by_custom_category(item_group, custom_type, custom_category):
-	items = filter_by_custom_type(item_group, custom_type)
-	return [item for item in items if item['category'] == custom_category]
+# def filter_by_custom_category(item_group, custom_type, custom_category):
+# 	items = filter_by_custom_type(item_group, custom_type)
+# 	return [item for item in items if item['category'] == custom_category]
