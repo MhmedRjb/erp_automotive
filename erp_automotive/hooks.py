@@ -235,18 +235,18 @@ scheduler_events = {
 
 # Fixtures= ["Property Setter"]
 
-fixtures = 	{
-	    "dt": "DocType",
-	    "filters": [
-	        [
-	            "module",
-	            "in",
-	            [
-	                "Erp Automotive",
-	            ]
-	        ]
-	    ]
-	}
+# fixtures = 	{
+# 	    "dt": "DocType",
+# 	    "filters": [
+# 	        [
+# 	            "module",
+# 	            "in",
+# 	            [
+# 	                "Erp Automotive",
+# 	            ]
+# 	        ]
+# 	    ]
+# 	}
 
 # [{"dt": "Custom Field"}]
 	#     "dt": "Property Setter",
