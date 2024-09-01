@@ -16,6 +16,7 @@
   "item_name",
   "column_break_obib",
   "serial_no",
+  "push",
   "section_break_wdwx",
   "items"
  ],
@@ -66,7 +67,7 @@
   },
   {
    "fieldname": "item_name",
-   "fieldtype": "Select",
+   "fieldtype": "Data",
    "label": "Item name"
   },
   {
@@ -82,11 +83,16 @@
   {
    "fieldname": "section_break_wdwx",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "push",
+   "fieldtype": "Button",
+   "label": "push"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-01 15:12:46.835813",
+ "modified": "2024-09-01 16:15:49.923801",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "Car Chooser",

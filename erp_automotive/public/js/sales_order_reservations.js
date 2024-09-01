@@ -61,17 +61,24 @@ frappe.ui.form.on('Sales Order', {
             console.error('Error fetching item name:', error);
         }
     },
-    custom_serial_no: async function(frm) {
+    custom_item_name:  function(frm) {
+        console.log('Setting query for custom_serial_no');
         frm.set_query ("custom_serial_no",function(){
+            console.log('custom_serial_no:', frm.doc.custom_serial_no);
             return {
-                filters: {
-                    item_code: frm.doc.custom_item_name,
+                "filters": {
+                    item_code: frm.doc.custom_item_name,    
+                    status: "Active",
+                    custom_reservation_status:"un Reserved"
                 }
             }
         })
             
     },
     custom_push: async function(frm, cdt, cdn) {
+        if (frm.doc.items.length > 0 && !frm.doc.items[0].item_code) {
+            frm.doc.items.splice(0, 1); // Remove the first empty row
+                }
         let item = frm.add_child('items');
         item.item_code = frm.doc.custom_item_name;
         item.custom_serial_no_saver = frm.doc.custom_serial_no;

@@ -5,6 +5,7 @@ from frappe import _
 @frappe.whitelist()
 def templet_list(item_group, templet=None, category=None, model=None, colour=None, item=None):
 	conditiones= ""
+	
 	query = f"""
 			SELECT DISTINCT
 				t1.name AS parent,
@@ -32,7 +33,6 @@ def templet_list(item_group, templet=None, category=None, model=None, colour=Non
 	items = results
 
 	if templet is None:
-		conditiones = "AND t2.attribute = 'templet'"
 		templet_list = list(set(item[6] for item in items if item[6] is not None))
 		return templet_list
 
