@@ -6,13 +6,24 @@
  "engine": "InnoDB",
  "field_order": [
   "item_group",
+  "model",
+  "column_break_ccmo",
+  "type",
+  "colour",
+  "column_break_khga",
+  "category",
+  "section_break_yfdo",
+  "item_name",
+  "column_break_obib",
+  "serial_no",
+  "section_break_wdwx",
   "items"
  ],
  "fields": [
   {
    "fieldname": "item_group",
    "fieldtype": "Link",
-   "label": "Item_group",
+   "label": "Item group",
    "options": "Item Group"
   },
   {
@@ -20,11 +31,62 @@
    "fieldtype": "Table",
    "label": "Items",
    "options": "Sales Order Item"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category"
+  },
+  {
+   "fieldname": "column_break_ccmo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Select",
+   "label": "Model"
+  },
+  {
+   "fieldname": "column_break_khga",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "colour",
+   "fieldtype": "Select",
+   "label": "Colour"
+  },
+  {
+   "fieldname": "section_break_yfdo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Select",
+   "label": "Item name"
+  },
+  {
+   "fieldname": "column_break_obib",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "serial_no",
+   "fieldtype": "Link",
+   "label": "Serial No",
+   "options": "Serial No"
+  },
+  {
+   "fieldname": "section_break_wdwx",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-01 01:24:04.440621",
+ "modified": "2024-09-01 15:12:46.835813",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "Car Chooser",

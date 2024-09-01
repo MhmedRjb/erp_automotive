@@ -3,7 +3,6 @@
 
 frappe.ui.form.on("Car Chooser", {
 	refresh(frm) {
-        //fetch all item to items child table based on the item_group
         frm.add_custom_button(__('Fetch Items'), function() {
             frappe.call({
                 method: "frappe.client.get_list",
