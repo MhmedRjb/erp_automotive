@@ -15,17 +15,32 @@ async function fetchAndSetOptions(frm, field, args) {
 
 frappe.ui.form.on('Sales Order', {
     custom_item_group: async function(frm) {
+        frm.set_value('custom_type', '');
+        frm.set_value('custom_category', '');
+        frm.set_value('custom_model', '');
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
         await fetchAndSetOptions(frm, 'custom_type', {
             item_group: frm.doc.custom_item_group
         });
     },
     custom_type: async function(frm) {
+        frm.set_value('custom_category', '');
+        frm.set_value('custom_model', '');
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
         await fetchAndSetOptions(frm, 'custom_category', {
             item_group: frm.doc.custom_item_group,
             templet: frm.doc.custom_type
         });
     },
     custom_category: async function(frm) {
+        frm.set_value('custom_model', '');
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
         await fetchAndSetOptions(frm, 'custom_model', {
             item_group: frm.doc.custom_item_group,
             templet: frm.doc.custom_type,
@@ -33,6 +48,9 @@ frappe.ui.form.on('Sales Order', {
         });
     },
     custom_model: async function(frm) {
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
         await fetchAndSetOptions(frm, 'custom_colour', {
             item_group: frm.doc.custom_item_group,
             templet: frm.doc.custom_type,
@@ -61,7 +79,7 @@ frappe.ui.form.on('Sales Order', {
             console.error('Error fetching item name:', error);
         }
     },
-    custom_item_name:  function(frm) {
+    custom_item_name: async function(frm) {
         console.log('Setting query for custom_serial_no');
         frm.set_query ("custom_serial_no",function(){
             console.log('custom_serial_no:', frm.doc.custom_serial_no);
@@ -82,6 +100,12 @@ frappe.ui.form.on('Sales Order', {
         let item = frm.add_child('items');
         item.item_code = frm.doc.custom_item_name;
         item.custom_serial_no_saver = frm.doc.custom_serial_no;
+        item.item_name = frm.doc.custom_item_name;
+        item.qty = 1;
+        item.delivery_date = frm.doc.delivery_date;
+        item.uom = 'Nos';
+        item.conversion_factor = 1;
+
         frm.refresh_field('items');
     }
 

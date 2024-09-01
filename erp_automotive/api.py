@@ -24,7 +24,6 @@ def templet_list(item_group, templet=None, category=None, model=None, colour=Non
 			WHERE 
 				t1.item_group = %s 
 				AND t1.disabled = 0 
-				{conditiones}
 			GROUP BY 
 				t1.name, t1.item_group, t3.name
 	"""
@@ -58,24 +57,9 @@ def templet_list(item_group, templet=None, category=None, model=None, colour=Non
 
 	if item is None:
 		item_list = list(set(item[0] for item in filtered_items if item[0] is not None))
-		item_list = item_list[0]
+		if item_list:  # Check if item_list is not empty
+			item_list = item_list[0]
 		return item_list
 
 	filtered_items = [item for item in filtered_items if item[0] == item]
-
 	return filtered_items
-
-# @frappe.whitelist()
-# def category_list(item_group, custom_templet):
-# 	items = filter_by_custom_templet(item_group, custom_templet)
-# 	category_list = list(set(item[3] for item in items if item[0] is not None))
-# 	return category_list
-
-
-# def filter_by_custom_templet(item_group, custom_templet):
-# 	items = filter_by_item_group(item_group)
-# 	return [item for item in items if item['templet'] == custom_templet]
-
-# def filter_by_custom_category(item_group, custom_templet, custom_category):
-# 	items = filter_by_custom_templet(item_group, custom_templet)
-# 	return [item for item in items if item['category'] == custom_category]

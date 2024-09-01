@@ -73,11 +73,34 @@ frappe.ui.form.on("Car Chooser", {
             
     },
     push: async function(frm, cdt, cdn) {
-        let item = frm.add_child('items');
-        item.item_code = frm.doc.custom_item_name;
-        item.custom_serial_no_saver = frm.doc.custom_serial_no;
+        //make a dict to test push seril and item to the child table in  table
+        let response = await frappe.call({
+            method: 'erp_automotive.api.templet_list',
+            args: {
+                item_group: frm.doc.item_group,
+                templet: frm.doc.type,
+                category: frm.doc.category,
+                model: frm.doc.model,
+                colour: frm.doc.colour,
+                sn:1
+            }
+        });
+        
+        let itemwiththeSerial = response.message;
+        console.log('itemwiththeSerial:', itemwiththeSerial);
+        for (let product in itemwiththeSerial) {
+            if (itemwiththeSerial.hasOwnProperty(product)) {
+                let serialNumbers = itemwiththeSerial[product];
+                for (let serial of serialNumbers) {
+                    let item = frm.add_child('items');
+                    item.item_code = product; // Assuming product name should be used as item_code
+                    item.custom_serial_no_saver = serial;
+                    item.custom_serial_no = serial;
+                }
+            }
+        }
         frm.refresh_field('items');
-    },
+        },
 
 	refresh(frm) {
         frm.add_custom_button(__('Fetch Items'), function() {
