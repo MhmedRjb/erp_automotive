@@ -7,7 +7,8 @@ async function fetchAndSetOptions(frm, field, args) {
             args: args
         });
         let itemNames = response.message;
-        frm.set_df_property(field, 'options', itemNames);
+        let firstItemArray = itemNames[0];
+        frm.set_df_property(field, 'options', firstItemArray);
         frm.refresh_field(field);
     } catch (error) {
         console.error('Error fetching options:', error);
@@ -56,7 +57,7 @@ frappe.ui.form.on("Car Chooser", {
             console.log('response:', response);
             let itemNames = response.message;
             console.log('itemNames:', itemNames);
-            frm.set_value('item_name', itemNames);
+            frm.set_value('item_name', itemNames[0]);
             frm.refresh_field('item_name');
         } catch (error) {
             console.error('Error fetching item name:', error);
@@ -73,35 +74,25 @@ frappe.ui.form.on("Car Chooser", {
             
     },
     push: async function(frm, cdt, cdn) {
-        //make a dict to test push seril and item to the child table in  table
         let response = await frappe.call({
-            method: 'erp_automotive.api.templet_list',
+            method: 'erp_automotive.api.get_item_and_serial_no',
             args: {
-                item_group: frm.doc.item_group,
-                templet: frm.doc.type,
-                category: frm.doc.category,
-                model: frm.doc.model,
-                colour: frm.doc.colour,
-                sn:1
+                item_group: frm.doc.item_group
             }
         });
         
         let itemwiththeSerial = response.message;
         console.log('itemwiththeSerial:', itemwiththeSerial);
-        for (let product in itemwiththeSerial) {
-            if (itemwiththeSerial.hasOwnProperty(product)) {
-                let serialNumbers = itemwiththeSerial[product];
-                for (let serial of serialNumbers) {
-                    let item = frm.add_child('items');
-                    item.item_code = product; // Assuming product name should be used as item_code
-                    item.custom_serial_no_saver = serial;
-                    item.custom_serial_no = serial;
-                }
-            }
+        for (let entry of itemwiththeSerial) {
+            let item = frm.add_child('items');
+            item.item_code = entry.item_code;
+            console.log('item_code:', entry.item_code);
+            item.custom_serial_no_saver = entry.name;
+            console.log('custom_serial_no_saver:', item.custom_serial_no_saver);
+            item.custom_serial_no = entry.name;
         }
         frm.refresh_field('items');
-        },
-
+    },
 	refresh(frm) {
         frm.add_custom_button(__('Fetch Items'), function() {
             frappe.call({ 
