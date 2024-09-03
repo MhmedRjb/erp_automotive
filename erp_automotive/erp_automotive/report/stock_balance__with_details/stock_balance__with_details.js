@@ -86,13 +86,6 @@ frappe.query_reports["Stock Balance  with details"] = {
 			options: "UOM",
 		},
 		{
-			fieldname:"serial_no",
-			label:__("Serial No"),
-			fieldtype:"Link",
-			options:"Serial No",
-		},
-
-		{
 			fieldname: "show_variant_attributes",
 			label: __("Show Variant Attributes"),
 			fieldtype: "Check",
@@ -115,8 +108,14 @@ frappe.query_reports["Stock Balance  with details"] = {
 			default: 0,
 		},
 		{
-			fieldname:"Size",
-			label:__("Size"),
+			fieldname:"serial_no",
+			label:__("Serial No"),
+			fieldtype:"Link",
+			options:"Serial No",
+		},
+		{
+			fieldname:"size",
+			label:__("size"),
 			fieldtype:"Data",
 		},
 

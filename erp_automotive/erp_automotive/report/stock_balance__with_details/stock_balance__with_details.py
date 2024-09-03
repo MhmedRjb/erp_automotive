@@ -197,10 +197,11 @@ class StockBalanceReport:
 		for field in self.inventory_dimensions:
 			qty_dict[field] = entry.get(field)
 
-		if entry.voucher_type == "Stock Reconciliation" and (not entry.batch_no or entry.serial_no):
+		if entry.voucher_type == "Stock Reconciliation" :
 			qty_diff = flt(entry.qty_after_transaction) - flt(qty_dict.bal_qty)
 		else:
 			qty_diff = flt(entry.actual_qty)
+		
 
 		value_diff = flt(entry.stock_value_difference)
 
@@ -209,7 +210,7 @@ class StockBalanceReport:
 		):
 			qty_dict.opening_qty += qty_diff
 			qty_dict.opening_val += value_diff
-
+		
 		elif entry.posting_date >= self.from_date and entry.posting_date <= self.to_date:
 			if flt(qty_diff, self.float_precision) >= 0:
 				qty_dict.in_qty += qty_diff
@@ -217,11 +218,16 @@ class StockBalanceReport:
 			else:
 				qty_dict.out_qty += abs(qty_diff)
 				qty_dict.out_val += abs(value_diff)
-
+	
 		qty_dict.val_rate = entry.valuation_rate
-		qty_dict.bal_qty += qty_diff
+		qty_dict.bal_qty += qty_diff  
+		if qty_dict.serial_no:
+			qty_dict.bal_qty =1 
+			qty_dict.in_qty = 1
+			if qty_dict.out_qty!=0:
+				qty_dict.out_qty = 1
+
 		qty_dict.bal_val += value_diff
-		qty_dict.serial_no = entry.serial_no
 
 
 	def initialize_data(self, item_warehouse_map, group_by_key, entry):
@@ -247,8 +253,7 @@ class StockBalanceReport:
 				"bal_val": opening_data.get("bal_val") or 0.0,
 				"val_rate": 0.0,
 				"serial_no": entry.serial_no,
-			}
-		)
+			})
 		
    
 	def get_group_by_key(self, row) -> tuple:
@@ -289,6 +294,9 @@ class StockBalanceReport:
 		sle = frappe.qb.DocType("Stock Ledger Entry")
 		item_table = frappe.qb.DocType("Item")
 		sn_table =frappe.qb.DocType("Serial No")
+#   qty_after_transaction_case = Case().when(sn_table.name.isnotnull(), 0).else_(sle.qty_after_transaction)
+# 	actual_qty_case = Case().when(sn_table.name.isnotnull(), 0).else_(sle.actual_qty)
+
 		query = (
 		frappe.qb.from_(sle)
 		.inner_join(item_table)
@@ -297,7 +305,7 @@ class StockBalanceReport:
 		.on(sle.item_code == sn_table.item_code)  
 		.select(
 			sle.item_code,
-			sn_table.name.as_("serial_no"),  # Corrected this line
+			sn_table.name.as_("serial_no"), 
 			sle.warehouse,
 			sle.posting_date,
 			sle.actual_qty,
@@ -398,7 +406,7 @@ class StockBalanceReport:
 			},
 			{
 				"label": _("Serial No"),
-				"fieldname": "serial_no",  # Make sure this matches the alias in the query
+				"fieldname": "serial_no", 
 				"fieldtype": "Link",
 				"options": "Serial No",
 				"width": 100,
@@ -520,7 +528,7 @@ class StockBalanceReport:
 				{"label": _("Earliest Age"), "fieldname": "earliest_age", "width": 100},
 				{"label": _("Latest Age"), "fieldname": "latest_age", "width": 100},
 			]
-
+		##TODO add variant attributes
 		if self.filters.get("show_variant_attributes"):
 			columns += [
 				{"label": att_name, "fieldname": att_name, "width": 100}
@@ -564,6 +572,7 @@ class StockBalanceReport:
 		"""Returns variant values for items."""
 		attribute_map = {}
 		items = []
+
 		if self.filters.item_code or self.filters.item_group:
 			items = [d.item_code for d in self.data]
 
@@ -580,7 +589,7 @@ class StockBalanceReport:
 		for attr in attribute_info:
 			attribute_map.setdefault(attr["parent"], {})
 			attribute_map[attr["parent"]].update({attr["attribute"]: attr["attribute_value"]})
-
+		print(attribute_map)
 		return attribute_map
 
 	def get_opening_vouchers(self):
