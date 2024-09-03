@@ -59,7 +59,6 @@ class StockBalanceReport:
 
 	def run(self):
 		self.float_precision = cint(frappe.db.get_default("float_precision")) or 3
-
 		self.inventory_dimensions = self.get_inventory_dimension_fields()
 		self.prepare_opening_data_from_closing_balance()
 		self.prepare_stock_ledger_entries()
@@ -222,6 +221,8 @@ class StockBalanceReport:
 		qty_dict.val_rate = entry.valuation_rate
 		qty_dict.bal_qty += qty_diff
 		qty_dict.bal_val += value_diff
+		qty_dict.serial_no = entry.serial_no
+
 
 	def initialize_data(self, item_warehouse_map, group_by_key, entry):
 		opening_data = self.opening_data.get(group_by_key, {})
@@ -245,11 +246,13 @@ class StockBalanceReport:
 				"bal_qty": opening_data.get("bal_qty") or 0.0,
 				"bal_val": opening_data.get("bal_val") or 0.0,
 				"val_rate": 0.0,
+				"serial_no": entry.serial_no,
 			}
 		)
-
+		
+   
 	def get_group_by_key(self, row) -> tuple:
-		group_by_key = [row.company, row.item_code, row.warehouse]
+		group_by_key = [row.company, row.item_code, row.warehouse ,row.serial_no]
 
 		for fieldname in self.inventory_dimensions:
 			if self.filters.get(fieldname):
@@ -290,10 +293,11 @@ class StockBalanceReport:
 		frappe.qb.from_(sle)
 		.inner_join(item_table)
 		.on(sle.item_code == item_table.name)
-		.left_join(sn_table)  # Change to LEFT JOIN
-		.on(sle.item_code == sn_table.item_code)  # Join condition
+		.left_join(sn_table)  
+		.on(sle.item_code == sn_table.item_code)  
 		.select(
 			sle.item_code,
+			sn_table.name.as_("serial_no"),  # Corrected this line
 			sle.warehouse,
 			sle.posting_date,
 			sle.actual_qty,
@@ -306,23 +310,23 @@ class StockBalanceReport:
 			sle.voucher_no,
 			sle.stock_value,
 			sle.batch_no,
-			sle.serial_no,
 			sle.serial_and_batch_bundle,
 			sle.has_serial_no,
 			item_table.item_group,
 			item_table.stock_uom,
 			item_table.item_name,
-			sn_table.Serial_no.as_("mySerial_no")  # This will be NULL if no match is found
 		)
 		.where((sle.docstatus < 2) & (sle.is_cancelled == 0))
-		.orderby(sle.posting_date)  # Ensure field names are correct
+		.orderby(sle.posting_date) 
 		.orderby(sle.creation)
 		.orderby(sle.actual_qty)
 		)
 		query = self.apply_inventory_dimensions_filters(query, sle)
 		query = self.apply_warehouse_filters(query, sle)
 		query = self.apply_items_filters(query, item_table)
+		query = self.apply_serial_no_filters(query, sn_table)
 		query = self.apply_date_filters(query, sle)
+
 
 		if self.filters.get("company"):
 			query = query.where(sle.company == self.filters.get("company"))
@@ -367,6 +371,11 @@ class StockBalanceReport:
 				query = query.where(item_table[field] == self.filters.get(field))
 
 		return query
+	def apply_serial_no_filters(self, query, sn_table) -> str:
+		serial_no_filter = self.filters.get("serial_no")
+		if serial_no_filter:
+			query = query.where(sn_table.serial_no == serial_no_filter)
+		return query
 
 	def apply_date_filters(self, query, sle) -> str:
 		if not self.filters.ignore_closing_balance and self.start_from:
@@ -379,6 +388,7 @@ class StockBalanceReport:
 
 	def get_columns(self):
 		columns = [
+
 			{
 				"label": _("Item"),
 				"fieldname": "item_code",
@@ -386,6 +396,14 @@ class StockBalanceReport:
 				"options": "Item",
 				"width": 100,
 			},
+			{
+				"label": _("Serial No"),
+				"fieldname": "serial_no",  # Make sure this matches the alias in the query
+				"fieldtype": "Link",
+				"options": "Serial No",
+				"width": 100,
+			},
+
 			{"label": _("Item Name"), "fieldname": "item_name", "width": 150},
 			{
 				"label": _("Item Group"),
@@ -399,13 +417,6 @@ class StockBalanceReport:
 				"fieldname": "warehouse",
 				"fieldtype": "Link",
 				"options": "Warehouse",
-				"width": 100,
-			},
-			{
-				"label": _("mySerial_no"),
-				"fieldname": "mySerial_no",
-				"fieldtype": "Link",
-				"options": "Serial No",
 				"width": 100,
 			},
 		]
@@ -498,6 +509,8 @@ class StockBalanceReport:
 					"options": "Company",
 					"width": 100,
 				},
+					
+	
 			]
 		)
 
@@ -635,6 +648,7 @@ def filter_items_with_no_transactions(
 				"stock_uom",
 				"company",
 				"opening_fifo_queue",
+				"serial_no",
 			]:
 				continue
 
