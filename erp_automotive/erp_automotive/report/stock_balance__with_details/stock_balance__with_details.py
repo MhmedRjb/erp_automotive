@@ -380,7 +380,7 @@ class StockBalanceReport:
 		query = self.apply_serial_no_filters(query, sn_table)
 		print("query",query)
 		query = self.apply_date_filters(query, sle)
-		query = self.apply_attributes_filters(query, query_variant)
+		# query = self.apply_attributes_filters(query, query_variant)
 
 
 		if self.filters.get("company"):

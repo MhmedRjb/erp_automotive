@@ -11,6 +11,7 @@ async function fetchAndSetOptions(fieldname, args) {
         let filter = frappe.query_report.get_filter(fieldname);
         if (filter) {
             filter.df.options = itemNames.join('\n');
+			filter.df.hidden = 0; 
             filter.refresh();
             filter.set_value('');
         } else {
@@ -58,9 +59,54 @@ frappe.query_reports["Stock Balance  with details"] = {
 				if (item_group) {
 					await fetchAndSetOptions('type', { item_group: item_group });
 				}
-			}
+		}
 		},
-								{
+		{
+            fieldname: "type",
+            label: __("Type"),
+            fieldtype: "Select",
+            width: "80",
+            options: [], 
+            hidden: 1, 
+            change: async function() {
+                const item_group = frappe.query_report.get_filter_value('item_group');
+				console.log(item_group)
+                const type = frappe.query_report.get_filter_value('type');
+				console.log(type)
+                if (item_group && type) {
+                    await fetchAndSetOptions('category', { item_group: item_group, templet: type });
+                }
+            }
+        },
+		{
+            fieldname: "category",
+            label: __("Category"),
+            fieldtype: "Select",
+            width: "80",
+			hidden: 1, 
+            options: [], 
+        },
+		{
+			fieldname: "model",
+			label: __("Model"),
+			fieldtype: "Data",
+			width: "80",
+		},
+		{
+			fieldname: "colour",
+			label: __("Colour"),
+			fieldtype: "Data",
+			width: "80",
+		},
+		{			
+			fieldname: "variant_of",
+			label: __("Variant of"),
+			fieldtype: "Data",
+			width: "80",
+		},
+
+
+		{
 			fieldname: "item_code",
 			label: __("Item"),
 			fieldtype: "Link",
@@ -127,44 +173,7 @@ frappe.query_reports["Stock Balance  with details"] = {
 			fieldtype: "Check",
 			default: 0,
 		},
-		{
-			fieldname: "model",
-			label: __("Model"),
-			fieldtype: "Data",
-			width: "80",
-		},
-		{
 
-			fieldname: "category",
-			label: __("Category"),
-			fieldtype: "Data",
-			width: "80",
-
-		},
-        {
-            fieldname: "type",
-            label: __("Type"),
-            fieldtype: "Select",
-            width: "80",
-            options: [], // Initialize with an empty array
-        },
-				{
-			fieldname: "colour",
-			label: __("Colour"),
-			fieldtype: "Data",
-			width: "80",
-
-		},
-		{			
-			
-			
-			fieldname: "variant_of",
-			label: __("Variant of"),
-			fieldtype: "Data",
-			width: "80",
-
-
-		}
 
 	],
 
