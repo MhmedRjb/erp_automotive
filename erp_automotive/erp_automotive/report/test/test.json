@@ -1,0 +1,36 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-09-02 15:49:17.219359",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letterhead": null,
+ "modified": "2024-09-02 15:49:17.219359",
+ "modified_by": "Administrator",
+ "module": "Erp Automotive",
+ "name": "test",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": " SELECT `sq0`.`warehouse`,`sq0`.`item_code`,`sq0`.`posting_date`,`sq0`.`actual_qty`,`sq0`.`valuation_rate`,`sq0`.`company`,`sq0`.`voucher_type`,`sq0`.`qty_after_transaction`,`sq0`.`stock_value_difference`,`sq0`.`name` `item_name`,`sq0`.`voucher_no`,`sq0`.`stock_value`,`sq0`.`batch_no`,`sq0`.`serial_no`,`sq0`.`serial_and_batch_bundle`,`sq0`.`has_serial_no`,`sq0`.`item_group`,`sq0`.`stock_uom`,`sq0`.`item_name`,`sq1`.`model`,`sq1`.`category`,`sq1`.`templet`,`sq1`.`colour`,`sq1`.`variant_of` FROM (SELECT `tabStock Ledger Entry`.`warehouse`,`tabStock Ledger Entry`.`item_code`,`tabStock Ledger Entry`.`posting_date`,`tabStock Ledger Entry`.`actual_qty`,`tabStock Ledger Entry`.`valuation_rate`,`tabStock Ledger Entry`.`company`,`tabStock Ledger Entry`.`voucher_type`,`tabStock Ledger Entry`.`qty_after_transaction`,`tabStock Ledger Entry`.`stock_value_difference`,`tabStock Ledger Entry`.`item_code` `name`,`tabStock Ledger Entry`.`voucher_no`,`tabStock Ledger Entry`.`stock_value`,`tabStock Ledger Entry`.`batch_no`,`tabStock Ledger Entry`.`serial_no`,`tabStock Ledger Entry`.`serial_and_batch_bundle`,`tabStock Ledger Entry`.`has_serial_no`,`tabItem`.`item_group`,`tabItem`.`stock_uom`,`tabItem`.`item_name` FROM `tabStock Ledger Entry` JOIN `tabItem` ON `tabStock Ledger Entry`.`item_code`=`tabItem`.`name` WHERE `tabStock Ledger Entry`.`docstatus`<2 AND `tabStock Ledger Entry`.`is_cancelled`=0 ORDER BY `tabStock Ledger Entry`.`posting_date`,`tabStock Ledger Entry`.`creation`,`tabStock Ledger Entry`.`actual_qty`) `sq0` JOIN (SELECT `tabItem`.`name` `parent`,MAX(CASE WHEN `tabItem Variant Attribute`.`attribute`='model' THEN `tabItem Variant Attribute`.`attribute_value` ELSE NULL END) `model`,MAX(CASE WHEN `tabItem Variant Attribute`.`attribute`='category' THEN `tabItem Variant Attribute`.`attribute_value` ELSE NULL END) `category`,MAX(CASE WHEN `tabItem Variant Attribute`.`attribute`='templet' THEN `tabItem Variant Attribute`.`attribute_value` ELSE NULL END) `templet`,MAX(CASE WHEN `tabItem Variant Attribute`.`attribute`='Colour' THEN `tabItem Variant Attribute`.`attribute_value` ELSE NULL END) `colour`,`t3`.`name` `variant_of` FROM `tabItem` LEFT JOIN `tabItem Variant Attribute` ON `tabItem`.`name`=`tabItem Variant Attribute`.`parent` LEFT JOIN `tabItem` `t3` ON `tabItem`.`variant_of`=`t3`.`name` WHERE `tabItem`.`disabled`=0 GROUP BY `tabItem`.`name`,`t3`.`name`) `sq1` ON `sq0`.`item_code`=`sq1`.`parent`",
+ "ref_doctype": "Stock Entry",
+ "report_name": "test",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Manufacturing User"
+  },
+  {
+   "role": "Manufacturing Manager"
+  },
+  {
+   "role": "Stock Manager"
+  }
+ ]
+}
