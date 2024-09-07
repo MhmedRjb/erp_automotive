@@ -1,5 +1,25 @@
 // Copyright (c) 2024, highsoultion and contributors
 // For license information, please see license.txt
+async function fetchAndSetOptions(fieldname, args) {
+    try {
+        let response = await frappe.call({
+            method: 'erp_automotive.api.templet_list',
+            args: args
+        });
+        let itemNames = response.message;
+
+        let filter = frappe.query_report.get_filter(fieldname);
+        if (filter) {
+            filter.df.options = itemNames.join('\n');
+            filter.refresh();
+            filter.set_value('');
+        } else {
+            console.error(`${fieldname} filter is not defined`);
+        }
+    } catch (error) {
+        console.error('Error fetching options:', error);
+    }
+}
 
 frappe.query_reports["Stock Balance  with details"] = {
 	filters: [
@@ -33,8 +53,14 @@ frappe.query_reports["Stock Balance  with details"] = {
 			fieldtype: "Link",
 			width: "80",
 			options: "Item Group",
+			change: async function() {		
+				const item_group = frappe.query_report.get_filter_value('item_group');
+				if (item_group) {
+					await fetchAndSetOptions('type', { item_group: item_group });
+				}
+			}
 		},
-		{
+								{
 			fieldname: "item_code",
 			label: __("Item"),
 			fieldtype: "Link",
@@ -102,22 +128,43 @@ frappe.query_reports["Stock Balance  with details"] = {
 			default: 0,
 		},
 		{
-			fieldname: "include_zero_stock_items",
-			label: __("Include Zero Stock Items"),
-			fieldtype: "Check",
-			default: 0,
+			fieldname: "model",
+			label: __("Model"),
+			fieldtype: "Data",
+			width: "80",
 		},
 		{
-			fieldname:"serial_no",
-			label:__("Serial No"),
-			fieldtype:"Link",
-			options:"Serial No",
+
+			fieldname: "category",
+			label: __("Category"),
+			fieldtype: "Data",
+			width: "80",
+
 		},
-		{
-			fieldname:"size",
-			label:__("size"),
-			fieldtype:"Data",
+        {
+            fieldname: "type",
+            label: __("Type"),
+            fieldtype: "Select",
+            width: "80",
+            options: [], // Initialize with an empty array
+        },
+				{
+			fieldname: "colour",
+			label: __("Colour"),
+			fieldtype: "Data",
+			width: "80",
+
 		},
+		{			
+			
+			
+			fieldname: "variant_of",
+			label: __("Variant of"),
+			fieldtype: "Data",
+			width: "80",
+
+
+		}
 
 	],
 

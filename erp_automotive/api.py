@@ -4,8 +4,6 @@ from frappe import _
 
 @frappe.whitelist()
 def templet_list(item_group, templet=None, category=None, model=None, colour=None, item=None):
-	
-	
 	conditiones= ""
 	
 	query = f"""
@@ -34,25 +32,26 @@ def templet_list(item_group, templet=None, category=None, model=None, colour=Non
 	items = results
 
 	if templet is None:
-		t_l = list(set(item[6] for item in items if item[6] is not None))	
-		return t_l ,items
+		templet_list = list(set(item[6] for item in items if item[6] is not None))
+		return templet_list
 
-	filtered_items = [item for item in items if item[6] == templet] 
+	filtered_items = [item for item in items if item[6] == templet]
+
 	if category is None:
 		category_list = list(set(item[3] for item in filtered_items if item[3] is not None))
-		return category_list ,items
+		return category_list
 
 	filtered_items = [item for item in filtered_items if item[3] == category]
 
 	if model is None:
 		model_list = list(set(item[2] for item in filtered_items if item[2] is not None))
-		return model_list,1
+		return model_list
 
 	filtered_items = [item for item in filtered_items if item[2] == model]
 
 	if colour is None:
 		colour_list = list(set(item[5] for item in filtered_items if item[5] is not None))
-		return colour_list,1
+		return colour_list
 
 	filtered_items = [item for item in filtered_items if item[5] == colour]
 
@@ -60,21 +59,7 @@ def templet_list(item_group, templet=None, category=None, model=None, colour=Non
 		item_list = list(set(item[0] for item in filtered_items if item[0] is not None))
 		if item_list:  # Check if item_list is not empty
 			item_list = item_list[0]
-		return item_list,1
+		return item_list
 
 	filtered_items = [item for item in filtered_items if item[0] == item]
 	return filtered_items
-
-
-
-@frappe.whitelist()
-def get_item_and_serial_no(item_group, templet=None, category=None, model=None, colour=None, item=None):
-	t_l,items=templet_list(item_group,templet='test')
-	print(t_l)	
-	print(items)
-	all_items = [item[0] for item in items if item[0] is not None]
-	print(all_items)
-	sn = frappe.db.get_list('Serial No', filters={'item_code': ['in', all_items]}, fields=['name', 'item_code'])
-	print(sn)
-	
-	return sn

@@ -8,8 +8,8 @@ from typing import Any, TypedDict
 
 import frappe
 from frappe import _
-from frappe.query_builder import Order
-from frappe.query_builder.functions import Coalesce
+from frappe.query_builder import Order ,Case
+from frappe.query_builder.functions import Coalesce , Max  ,Coalesce
 from frappe.utils import add_days, cint, date_diff, flt, getdate
 from frappe.utils.nestedset import get_descendants_of
 
@@ -164,7 +164,7 @@ class StockBalanceReport:
 				group_by_key = self.get_group_by_key(entry)
 				if group_by_key not in item_warehouse_map:
 					self.initialize_data(item_warehouse_map, group_by_key, entry)
-
+					
 				self.prepare_item_warehouse_map(item_warehouse_map, entry, group_by_key)
 
 				if self.opening_data.get(group_by_key):
@@ -232,7 +232,8 @@ class StockBalanceReport:
 
 	def initialize_data(self, item_warehouse_map, group_by_key, entry):
 		opening_data = self.opening_data.get(group_by_key, {})
-
+		print("opening_data",opening_data)
+		print("entry",entry)
 		item_warehouse_map[group_by_key] = frappe._dict(
 			{
 				"item_code": entry.item_code,
@@ -253,11 +254,17 @@ class StockBalanceReport:
 				"bal_val": opening_data.get("bal_val") or 0.0,
 				"val_rate": 0.0,
 				"serial_no": entry.serial_no,
+				"model": entry.model,
+				"category": entry.category,
+				"type": entry.type,
+				"colour": entry.colour,
+				"variant_of": entry.variant_of,
 			})
+
 		
    
 	def get_group_by_key(self, row) -> tuple:
-		group_by_key = [row.company, row.item_code, row.warehouse ,row.serial_no]
+		group_by_key = [row.company, row.item_code, row.warehouse ,row.serial_no,row.type]
 
 		for fieldname in self.inventory_dimensions:
 			if self.filters.get(fieldname):
@@ -294,46 +301,86 @@ class StockBalanceReport:
 		sle = frappe.qb.DocType("Stock Ledger Entry")
 		item_table = frappe.qb.DocType("Item")
 		sn_table =frappe.qb.DocType("Serial No")
-#   qty_after_transaction_case = Case().when(sn_table.name.isnotnull(), 0).else_(sle.qty_after_transaction)
-# 	actual_qty_case = Case().when(sn_table.name.isnotnull(), 0).else_(sle.actual_qty)
+		item_variant_attribute = frappe.qb.DocType("Item Variant Attribute")
+		query_variant = (
+			frappe.qb.from_(item_table)
+			.left_join(item_variant_attribute)
+			.on(item_table.name == item_variant_attribute.parent)
+			.left_join(item_table.as_("t3"))
+			.on(item_table.variant_of == item_table.as_("t3").name)
+			.select(
+				item_table.name.as_("parent"),
+				Max(
+					Case()
+					.when(item_variant_attribute.attribute == 'model', item_variant_attribute.attribute_value)
+				).as_("model"),
+				Max(
+					Case()
+					.when(item_variant_attribute.attribute == 'category', item_variant_attribute.attribute_value)
+				).as_("category"),
+				Max(
+					Case()
+					.when(item_variant_attribute.attribute == 'type', item_variant_attribute.attribute_value)
+				).as_("type"),
+				Max(
+					Case()
+					.when(item_variant_attribute.attribute == 'Colour', item_variant_attribute.attribute_value)
+				).as_("colour"),
+				item_table.as_("t3").name.as_("variant_of")
+			)
+			.where(item_table.disabled == 0)
+			.groupby(item_table.name, item_table.as_("t3").name)
+		).as_("variants")
 
+		# Define the main query with the join to the variant query
 		query = (
-		frappe.qb.from_(sle)
-		.inner_join(item_table)
-		.on(sle.item_code == item_table.name)
-		.left_join(sn_table)  
-		.on(sle.item_code == sn_table.item_code)  
-		.select(
-			sle.item_code,
-			sn_table.name.as_("serial_no"), 
-			sle.warehouse,
-			sle.posting_date,
-			sle.actual_qty,
-			sle.valuation_rate,
-			sle.company,
-			sle.voucher_type,
-			sle.qty_after_transaction,
-			sle.stock_value_difference,
-			sle.item_code.as_("name"),
-			sle.voucher_no,
-			sle.stock_value,
-			sle.batch_no,
-			sle.serial_and_batch_bundle,
-			sle.has_serial_no,
-			item_table.item_group,
-			item_table.stock_uom,
-			item_table.item_name,
+			frappe.qb.from_(sle)
+			.inner_join(item_table)
+			.on(sle.item_code == item_table.name)
+			.left_join(sn_table)
+			.on(sle.item_code == sn_table.item_code)
+			.left_join(query_variant)
+			.on(sle.item_code == query_variant.parent)
+			.select(
+				sle.item_code,
+				sn_table.name.as_("serial_no"),
+				sle.warehouse,
+				sle.posting_date,
+				sle.actual_qty,
+				sle.valuation_rate,
+				sle.company,
+				sle.voucher_type,
+				sle.qty_after_transaction,
+				sle.stock_value_difference,
+				sle.item_code.as_("name"),
+				sle.voucher_no,
+				sle.stock_value,
+				sle.batch_no,
+				sle.serial_and_batch_bundle,
+				sle.has_serial_no,
+				item_table.item_group,
+				item_table.stock_uom,
+				item_table.item_name,
+				query_variant.model,
+				query_variant.category,
+				query_variant.type,
+				query_variant.colour,
+				query_variant.variant_of
+			)
+			.where((sle.docstatus < 2) & (sle.is_cancelled == 0))
+			.orderby(sle.posting_date)
+			.orderby(sle.creation)
+			.orderby(sle.actual_qty)
 		)
-		.where((sle.docstatus < 2) & (sle.is_cancelled == 0))
-		.orderby(sle.posting_date) 
-		.orderby(sle.creation)
-		.orderby(sle.actual_qty)
-		)
+
+  
 		query = self.apply_inventory_dimensions_filters(query, sle)
 		query = self.apply_warehouse_filters(query, sle)
 		query = self.apply_items_filters(query, item_table)
 		query = self.apply_serial_no_filters(query, sn_table)
+		print("query",query)
 		query = self.apply_date_filters(query, sle)
+		query = self.apply_attributes_filters(query, query_variant)
 
 
 		if self.filters.get("company"):
@@ -393,7 +440,36 @@ class StockBalanceReport:
 			query = query.where(sle.posting_date <= self.to_date)
 
 		return query
+	def apply_attributes_filters(self, query, query_variant) -> str:
+	# Example attribute filters
+		
+		model_filter = self.filters.get("model")
+		category_filter = self.filters.get("category")
+		type_filter = self.filters.get("type")
+		colour_filter = self.filters.get("colour")
+		variant_of =self.filters.get("variant_of")
 
+		# Apply each filter to the query if it exists
+		if model_filter:
+			query = query.where(query_variant.model == model_filter)
+
+		
+		if category_filter:
+			query = query.where(query_variant.category == category_filter)
+		
+		if type_filter:
+			query = query.where(query_variant.type == type_filter)
+		
+		if colour_filter:
+			query = query.where(query_variant.colour == colour_filter)
+
+		if variant_of:
+			query = query.where(query_variant.variant_of == variant_of)
+		
+		return query
+   
+   
+   
 	def get_columns(self):
 		columns = [
 
@@ -517,7 +593,36 @@ class StockBalanceReport:
 					"options": "Company",
 					"width": 100,
 				},
-					
+				{
+					"label": _("Model"),
+					"fieldname": "model",
+					"fieldtype": "Data",
+					"width": 100,
+				},
+				{
+					"label": _("Category"),
+					"fieldname": "category",
+					"fieldtype": "Data",
+					"width": 100,
+				},
+				{
+					"label": _("type"),
+					"fieldname": "type",
+					"fieldtype": "Data",
+					"width": 100,
+				},
+				{
+					"label": _("Colour"),
+					"fieldname": "colour",
+					"fieldtype": "Data",
+					"width": 100,
+				},
+				{
+					"label": _("variant_of"),
+					"fieldname": "variant_of",
+					"fieldtype": "Data",
+					"width": 100,
+				},
 	
 			]
 		)
@@ -658,6 +763,11 @@ def filter_items_with_no_transactions(
 				"company",
 				"opening_fifo_queue",
 				"serial_no",
+				"model",
+				"category",
+				"type",
+				"colour",
+				"variant_of",
 			]:
 				continue
 
