@@ -35,6 +35,10 @@ frappe.ui.form.on('Sales Order', {
             item_group: frm.doc.custom_item_group,
             templet: frm.doc.custom_type
         });
+        if (frm.fields_dict.custom_category.df.options.length == 1) {
+            frm.set_value('custom_category', frm.fields_dict.custom_category.df.options[0]);
+        }
+
     },
     custom_category: async function(frm) {
         frm.set_value('custom_model', '');
@@ -46,6 +50,10 @@ frappe.ui.form.on('Sales Order', {
             templet: frm.doc.custom_type,
             category: frm.doc.custom_category
         });
+        if (frm.fields_dict.custom_model.df.options.length == 1) {
+            frm.set_value('custom_model', frm.fields_dict.custom_model.df.options[0]);
+        }
+
     },
     custom_model: async function(frm) {
         frm.set_value('custom_colour', '');
@@ -57,6 +65,10 @@ frappe.ui.form.on('Sales Order', {
             category: frm.doc.custom_category,
             model: frm.doc.custom_model
         });
+        if (frm.fields_dict.custom_colour.df.options.length == 1) {
+            frm.set_value('custom_colour', frm.fields_dict.custom_colour.df.options[0]);
+        }
+
     },
     custom_colour: async function(frm) {
         frm.set_value('custom_colour2', '');
@@ -69,28 +81,28 @@ frappe.ui.form.on('Sales Order', {
             model: frm.doc.custom_model,
             colour:frm.doc.custom_colour
         });
+        if (frm.fields_dict.custom_colour2.df.options.length == 1) {
+            frm.set_value('custom_colour2', frm.fields_dict.custom_colour2.df.options[0]);
+        }
+    
     },
     custom_colour2: async function(frm) {
         frm.set_value('custom_item_name', '');
-        try {
-            let response = await frappe.call({
-                method: 'erp_automotive.api.templet_list',
-                args: {
-                    item_group: frm.doc.custom_item_group,
-                    templet: frm.doc.custom_type,
-                    category: frm.doc.custom_category,
-                    model: frm.doc.custom_model,
-                    colour: frm.doc.custom_colour,
-                    colour2:frm.doc.custom_colour2
-                }
-            });
-            let itemNames = response.message;
-            frm.set_value('custom_item_name', itemNames);
-            frm.refresh_field('custom_item_name');
-            frm.refresh_field('custom_serial_no');
-        } catch (error) {
-            console.error('Error fetching item name:', error);
-        }
+
+        await fetchAndSetOptions(frm, 'custom_item_name', {
+            item_group: frm.doc.custom_item_group,
+            templet: frm.doc.custom_type,
+            category: frm.doc.custom_category,
+            model: frm.doc.custom_model,
+            colour:frm.doc.custom_colour,
+            colour2:frm.doc.custom_colour2
+        });
+            // Automatically select the first choice for custom_item_name
+    if (frm.fields_dict.custom_item_name.df.options.length == 1) {
+        frm.set_value('custom_item_name', frm.fields_dict.custom_item_name.df.options[0]);
+    }
+
+
     },
     custom_item_name: async function(frm) {
         console.log('Setting query for custom_serial_no');
