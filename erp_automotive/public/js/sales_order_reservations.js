@@ -59,6 +59,19 @@ frappe.ui.form.on('Sales Order', {
         });
     },
     custom_colour: async function(frm) {
+        frm.set_value('custom_colour2', '');
+        frm.set_value('custom_item_name', '');
+
+        await fetchAndSetOptions(frm, 'custom_colour2', {
+            item_group: frm.doc.custom_item_group,
+            templet: frm.doc.custom_type,
+            category: frm.doc.custom_category,
+            model: frm.doc.custom_model,
+            colour:frm.doc.custom_colour
+        });
+    },
+    custom_colour2: async function(frm) {
+        frm.set_value('custom_item_name', '');
         try {
             let response = await frappe.call({
                 method: 'erp_automotive.api.templet_list',
@@ -67,14 +80,14 @@ frappe.ui.form.on('Sales Order', {
                     templet: frm.doc.custom_type,
                     category: frm.doc.custom_category,
                     model: frm.doc.custom_model,
-                    colour: frm.doc.custom_colour
+                    colour: frm.doc.custom_colour,
+                    colour2:frm.doc.custom_colour2
                 }
             });
-            console.log('response:', response);
             let itemNames = response.message;
-            console.log('itemNames:', itemNames);
             frm.set_value('custom_item_name', itemNames);
             frm.refresh_field('custom_item_name');
+            frm.refresh_field('custom_serial_no');
         } catch (error) {
             console.error('Error fetching item name:', error);
         }
@@ -82,7 +95,6 @@ frappe.ui.form.on('Sales Order', {
     custom_item_name: async function(frm) {
         console.log('Setting query for custom_serial_no');
         frm.set_query ("custom_serial_no",function(){
-            console.log('custom_serial_no:', frm.doc.custom_serial_no);
             return {
                 "filters": {
                     item_code: frm.doc.custom_item_name,    

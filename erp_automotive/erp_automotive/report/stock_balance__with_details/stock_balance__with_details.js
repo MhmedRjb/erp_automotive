@@ -12,14 +12,27 @@ async function fetchAndSetOptions(fieldname, args) {
         if (filter) {
             filter.df.options = itemNames.join('\n');
 			filter.df.hidden = 0; 
-            filter.refresh();
             filter.set_value('');
+			filter.refresh();
+
         } else {
             console.error(`${fieldname} filter is not defined`);
         }
     } catch (error) {
         console.error('Error fetching options:', error);
     }
+}
+function resetDependentFields(fields) {
+    fields.forEach((fieldname, index) => {
+        let filter = frappe.query_report.get_filter(fieldname);
+        if (filter) {
+            filter.set_value('');
+            if (index > 0) {
+                filter.df.hidden = 1;
+            }
+            filter.refresh();
+        }
+    });
 }
 
 frappe.query_reports["Stock Balance  with details"] = {
@@ -56,6 +69,7 @@ frappe.query_reports["Stock Balance  with details"] = {
 			options: "Item Group",
 			change: async function() {		
 				const item_group = frappe.query_report.get_filter_value('item_group');
+				resetDependentFields(['type', 'category', 'model', 'colour', 'variant_of']);
 				if (item_group) {
 					await fetchAndSetOptions('type', { item_group: item_group });
 				}
@@ -70,9 +84,8 @@ frappe.query_reports["Stock Balance  with details"] = {
             hidden: 1, 
             change: async function() {
                 const item_group = frappe.query_report.get_filter_value('item_group');
-				console.log(item_group)
                 const type = frappe.query_report.get_filter_value('type');
-				console.log(type)
+				resetDependentFields(['category', 'model', 'colour', 'variant_of']);
                 if (item_group && type) {
                     await fetchAndSetOptions('category', { item_group: item_group, templet: type });
                 }
@@ -85,24 +98,72 @@ frappe.query_reports["Stock Balance  with details"] = {
             width: "80",
 			hidden: 1, 
             options: [], 
+		change: async function() {
+			const item_group = frappe.query_report.get_filter_value('item_group');
+			const type = frappe.query_report.get_filter_value('type');
+			const category = frappe.query_report.get_filter_value('category');
+			resetDependentFields([ 'model', 'colour', 'variant_of']);
+			if (item_group && type && category){
+				await fetchAndSetOptions('model', { item_group: item_group, templet: type, category: category });
+			}
+			
+		}
         },
 		{
 			fieldname: "model",
 			label: __("Model"),
-			fieldtype: "Data",
+            fieldtype: "Select",
 			width: "80",
+			hidden: 1,	
+			options: [],
+			change:async function() {
+				const item_group = frappe.query_report.get_filter_value('item_group');
+				const type = frappe.query_report.get_filter_value('type');
+				const category = frappe.query_report.get_filter_value('category');
+				const model = frappe.query_report.get_filter_value('model');
+				resetDependentFields(['colour', 'variant_of']);
+				if (item_group && type && category && model){
+					await fetchAndSetOptions('colour', { item_group: item_group, templet: type, category: category, model: model });
+				}
+			}
 		},
 		{
 			fieldname: "colour",
 			label: __("Colour"),
-			fieldtype: "Data",
+            fieldtype: "Select",
 			width: "80",
+			hidden: 1,
+			options: [],
+			change:async function() {
+				const item_group = frappe.query_report.get_filter_value('item_group');
+				const type = frappe.query_report.get_filter_value('type');
+				const category = frappe.query_report.get_filter_value('category');
+				const model = frappe.query_report.get_filter_value('model');
+				const colour = frappe.query_report.get_filter_value('colour');
+				resetDependentFields(['variant_of']);
+				if (item_group && type && category && model && colour){
+					await fetchAndSetOptions('item_code', { item_group: item_group, templet: type, category: category, model: model, colour: colour });
+				}
+			}
 		},
 		{			
 			fieldname: "variant_of",
 			label: __("Variant of"),
-			fieldtype: "Data",
+            fieldtype: "Select",
 			width: "80",
+			hidden: 1,
+			options: [],
+			change:async function() {
+				const item_group = frappe.query_report.get_filter_value('item_group');
+				const type = frappe.query_report.get_filter_value('type');
+				const category = frappe.query_report.get_filter_value('category');
+				const model = frappe.query_report.get_filter_value('model');
+				const colour = frappe.query_report.get_filter_value('colour');
+				const variant_of = frappe.query_report.get_filter_value('variant_of');
+				if (item_group && type && category && model && colour && variant_of){
+					await fetchAndSetOptions('item_code', { item_group: item_group, templet: type, category: category, model: model, colour: colour, variant_of: variant_of });
+				}
+			}
 		},
 
 
