@@ -14,7 +14,6 @@ class CustomPurchaseReceipt(PurchaseReceipt):
                     serial_number_doc.purchase_receipt = self.name
                     serial_number_doc.company = self.company
                     serial_number_doc.purchase_date = self.posting_date
-                    serial_number_doc.status = _("without customs card")
                     serial_number_doc.insert()  
 
 

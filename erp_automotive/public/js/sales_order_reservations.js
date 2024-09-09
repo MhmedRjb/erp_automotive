@@ -97,7 +97,6 @@ frappe.ui.form.on('Sales Order', {
             colour:frm.doc.custom_colour,
             colour2:frm.doc.custom_colour2
         });
-            // Automatically select the first choice for custom_item_name
     if (frm.fields_dict.custom_item_name.df.options.length == 1) {
         frm.set_value('custom_item_name', frm.fields_dict.custom_item_name.df.options[0]);
     }
@@ -111,7 +110,9 @@ frappe.ui.form.on('Sales Order', {
                 "filters": {
                     item_code: frm.doc.custom_item_name,    
                     status: "Active",
-                    custom_reservation_status:"un Reserved"
+                    custom_reservation_status:"un Reserved",
+                    warehouse: frm.doc.set_warehouse
+                    
                 }
             }
         })
@@ -162,7 +163,6 @@ frappe.ui.form.on("Sales Order Item", {
     item_code: function(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
         console.log('Item Code:', row.item_code);
-        //remove the custom_serial_no_saver
         row.custom_serial_no_saver = '';
     },
 
@@ -215,7 +215,8 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                                 filters: {
                                     item_code: row.item_code,
                                     status: "Active",
-                                    custom_reservation_status:"un Reserved"
+                                    custom_reservation_status:"un Reserved",
+                                    warehouse: row.warehouse
                                 }
                             };
                         }

@@ -138,10 +138,11 @@ class StockBalanceReport:
 
 				report_data.update(stock_ageing_data)
 
-			report_data.update(
-				{"reserved_stock": sre_details.get((report_data.item_code, report_data.warehouse), 0.0)}
-			)
+				reserved_stock = sre_details.get((report_data.item_code, report_data.warehouse), 0.0)
+				if reserved_stock > 1:
+					reserved_stock = 1.0
 
+				report_data.update({"reserved_stock": reserved_stock})
 			if (
 				not self.filters.get("include_zero_stock_items")
 				and report_data
@@ -262,6 +263,7 @@ class StockBalanceReport:
 				"colour": entry.colour,
 				"type": entry.type,
     			"colour2": entry.colour2,
+				"custom_reservation_status":entry.custom_reservation_status,
 			})
 
 		
@@ -343,7 +345,7 @@ class StockBalanceReport:
 			.inner_join(item_table)
 			.on(sle.item_code == item_table.name)
 			.left_join(sn_table)
-			.on(sle.item_code == sn_table.item_code)
+		    .on((sle.item_code == sn_table.item_code) & (sle.warehouse == sn_table.warehouse))
 			.left_join(query_variant)
 			.on(sle.item_code == query_variant.parent)
 			.select(
@@ -370,7 +372,8 @@ class StockBalanceReport:
 				query_variant.category,
 				query_variant.colour,
 				query_variant.colour2,
-				query_variant.type
+				query_variant.type,
+				sn_table.custom_reservation_status,
 			)
 			.where((sle.docstatus < 2) & (sle.is_cancelled == 0))
 			.orderby(sle.posting_date)
@@ -446,7 +449,7 @@ class StockBalanceReport:
 
 		return query
 	def apply_attributes_filters(self, query, query_variant) -> str:
-		for field in ["type", "category", "model", "colour", "colour2"]:
+		for field in ["type", "category", "model", "colour", "colour2","custom_reservation_status"]:
 			filter_value = self.filters.get(field)
 			if filter_value:
 				query = query.where(getattr(query_variant, field) == filter_value)
@@ -530,6 +533,8 @@ class StockBalanceReport:
 					"fieldtype": "Float",
 					"width": 100,
 					"convertible": "qty",
+     					"hidden":1
+
 				},
 				{
 					"label": _("Opening Value"),
@@ -545,6 +550,8 @@ class StockBalanceReport:
 					"fieldtype": "Float",
 					"width": 80,
 					"convertible": "qty",
+     					"hidden":1
+
 				},
 				{"label": _("In Value"), "fieldname": "in_val", "fieldtype": "Float", "width": 80,"hidden":1},
 				{
@@ -553,6 +560,8 @@ class StockBalanceReport:
 					"fieldtype": "Float",
 					"width": 80,
 					"convertible": "qty",
+     					"hidden":1
+
 				},
 				{"label": _("Out Value"), "fieldname": "out_val", "fieldtype": "Float", "width": 80 ,"hidden":1},
 				{
@@ -572,6 +581,7 @@ class StockBalanceReport:
 					"fieldtype": "Float",
 					"width": 80,
 					"convertible": "qty",
+					"hidden":1
 				},
 				{
 					"label": _("Company"),
@@ -611,6 +621,13 @@ class StockBalanceReport:
 					"fieldtype": "Data",
 					"width": 100,
 				},
+    			{
+       			"label": _("reservation_status"),
+				"fieldname": "custom_reservation_status", 
+				"fieldtype": "Data",
+				"width": 100,
+       		},
+
 	
 			]
 		)
@@ -756,6 +773,7 @@ def filter_items_with_no_transactions(
 				"colour",
 				"type",
 				"colour2",
+				"custom_reservation_status",
 			]:
 				continue
 

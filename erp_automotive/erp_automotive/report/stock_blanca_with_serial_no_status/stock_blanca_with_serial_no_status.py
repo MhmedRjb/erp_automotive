@@ -2,6 +2,10 @@
 # For license information, please see license.txt
 
 # import frappe
+# Copyright (c) 2024, highsoultion and contributors
+# For license information, please see license.txt
+
+# import frappe
 
 from operator import itemgetter
 from typing import Any, TypedDict
@@ -18,6 +22,7 @@ from erpnext.stock.doctype.inventory_dimension.inventory_dimension import get_in
 from erpnext.stock.doctype.warehouse.warehouse import apply_warehouse_filter
 from erpnext.stock.report.stock_ageing.stock_ageing import FIFOSlots, get_average_age
 from erpnext.stock.utils import add_additional_uom_columns
+
 
 
 class StockBalanceFilter(TypedDict):
@@ -133,10 +138,11 @@ class StockBalanceReport:
 
 				report_data.update(stock_ageing_data)
 
-			report_data.update(
-				{"reserved_stock": sre_details.get((report_data.item_code, report_data.warehouse), 0.0)}
-			)
+				reserved_stock = sre_details.get((report_data.item_code, report_data.warehouse), 0.0)
+				if reserved_stock > 1:
+					reserved_stock = 1.0
 
+				report_data.update({"reserved_stock": reserved_stock})
 			if (
 				not self.filters.get("include_zero_stock_items")
 				and report_data
@@ -232,8 +238,6 @@ class StockBalanceReport:
 
 	def initialize_data(self, item_warehouse_map, group_by_key, entry):
 		opening_data = self.opening_data.get(group_by_key, {})
-		print("opening_data",opening_data)
-		print("entry",entry)
 		item_warehouse_map[group_by_key] = frappe._dict(
 			{
 				"item_code": entry.item_code,
@@ -256,9 +260,10 @@ class StockBalanceReport:
 				"serial_no": entry.serial_no,
 				"model": entry.model,
 				"category": entry.category,
-				"type": entry.type,
 				"colour": entry.colour,
-				"variant_of": entry.variant_of,
+				"type": entry.type,
+    			"colour2": entry.colour2,
+				"custom_reservation_status":entry.custom_reservation_status,
 			})
 
 		
@@ -312,21 +317,23 @@ class StockBalanceReport:
 				item_table.name.as_("parent"),
 				Max(
 					Case()
-					.when(item_variant_attribute.attribute == 'model', item_variant_attribute.attribute_value)
+					.when(item_variant_attribute.attribute == 'الموديل', item_variant_attribute.attribute_value)
 				).as_("model"),
 				Max(
 					Case()
-					.when(item_variant_attribute.attribute == 'category', item_variant_attribute.attribute_value)
+					.when(item_variant_attribute.attribute == 'الفئة', item_variant_attribute.attribute_value)
 				).as_("category"),
 				Max(
 					Case()
-					.when(item_variant_attribute.attribute == 'type', item_variant_attribute.attribute_value)
-				).as_("type"),
-				Max(
-					Case()
-					.when(item_variant_attribute.attribute == 'Colour', item_variant_attribute.attribute_value)
+					.when(item_variant_attribute.attribute == 'اللون الخارجي', item_variant_attribute.attribute_value)
 				).as_("colour"),
-				item_table.as_("t3").name.as_("variant_of")
+							
+				item_table.as_("t3").name.as_("type"),
+    				Max(
+					Case()
+					.when(item_variant_attribute.attribute == 'اللون الداخلي', item_variant_attribute.attribute_value)
+				).as_("colour2"),
+
 			)
 			.where(item_table.disabled == 0)
 			.groupby(item_table.name, item_table.as_("t3").name)
@@ -338,7 +345,7 @@ class StockBalanceReport:
 			.inner_join(item_table)
 			.on(sle.item_code == item_table.name)
 			.left_join(sn_table)
-			.on(sle.item_code == sn_table.item_code)
+		    .on((sle.item_code == sn_table.item_code) & (sle.warehouse == sn_table.warehouse))
 			.left_join(query_variant)
 			.on(sle.item_code == query_variant.parent)
 			.select(
@@ -363,9 +370,10 @@ class StockBalanceReport:
 				item_table.item_name,
 				query_variant.model,
 				query_variant.category,
-				query_variant.type,
 				query_variant.colour,
-				query_variant.variant_of
+				query_variant.colour2,
+				query_variant.type,
+				sn_table.custom_reservation_status,
 			)
 			.where((sle.docstatus < 2) & (sle.is_cancelled == 0))
 			.orderby(sle.posting_date)
@@ -378,7 +386,6 @@ class StockBalanceReport:
 		query = self.apply_warehouse_filters(query, sle)
 		query = self.apply_items_filters(query, item_table)
 		query = self.apply_serial_no_filters(query, sn_table)
-		print("query",query)
 		query = self.apply_date_filters(query, sle)
 		query = self.apply_attributes_filters(query, query_variant)
 		print(query	)
@@ -442,22 +449,11 @@ class StockBalanceReport:
 
 		return query
 	def apply_attributes_filters(self, query, query_variant) -> str:
-	# Example attribute filters
-		
-		model_filter = self.filters.get("model")
-		category_filter = self.filters.get("category")
-		type_filter = self.filters.get("type")
-		colour_filter = self.filters.get("colour")
-		variant_of =self.filters.get("variant_of")
-
-		# Apply each filter to the query if it exists
-		if type_filter:
-			query = query.where(query_variant.type == type_filter)
-			print("type_filter",type_filter)
-			print("query_variant.type",query)
-				
-		return query
-   
+		for field in ["type", "category", "model", "colour", "colour2","custom_reservation_status"]:
+			filter_value = self.filters.get(field)
+			if filter_value:
+				query = query.where(getattr(query_variant, field) == filter_value)
+		return query   
    
    
 	def get_columns(self):
@@ -514,6 +510,7 @@ class StockBalanceReport:
 					"fieldtype": "Link",
 					"options": "UOM",
 					"width": 90,
+					"hidden":1
 				},
 				{
 					"label": _("Balance Qty"),
@@ -528,6 +525,7 @@ class StockBalanceReport:
 					"fieldtype": "Currency",
 					"width": 100,
 					"options": "Company:company:default_currency",
+					"hidden":1
 				},
 				{
 					"label": _("Opening Qty"),
@@ -535,6 +533,8 @@ class StockBalanceReport:
 					"fieldtype": "Float",
 					"width": 100,
 					"convertible": "qty",
+     					"hidden":1
+
 				},
 				{
 					"label": _("Opening Value"),
@@ -542,6 +542,7 @@ class StockBalanceReport:
 					"fieldtype": "Currency",
 					"width": 110,
 					"options": "Company:company:default_currency",
+					"hidden":1
 				},
 				{
 					"label": _("In Qty"),
@@ -549,16 +550,20 @@ class StockBalanceReport:
 					"fieldtype": "Float",
 					"width": 80,
 					"convertible": "qty",
+     					"hidden":1
+
 				},
-				{"label": _("In Value"), "fieldname": "in_val", "fieldtype": "Float", "width": 80},
+				{"label": _("In Value"), "fieldname": "in_val", "fieldtype": "Float", "width": 80,"hidden":1},
 				{
 					"label": _("Out Qty"),
 					"fieldname": "out_qty",
 					"fieldtype": "Float",
 					"width": 80,
 					"convertible": "qty",
+     					"hidden":1
+
 				},
-				{"label": _("Out Value"), "fieldname": "out_val", "fieldtype": "Float", "width": 80},
+				{"label": _("Out Value"), "fieldname": "out_val", "fieldtype": "Float", "width": 80 ,"hidden":1},
 				{
 					"label": _("Valuation Rate"),
 					"fieldname": "val_rate",
@@ -568,6 +573,7 @@ class StockBalanceReport:
 					"options": "Company:company:default_currency"
 					if self.filters.valuation_field_type == "Currency"
 					else None,
+	     			"hidden":1
 				},
 				{
 					"label": _("Reserved Stock"),
@@ -575,6 +581,7 @@ class StockBalanceReport:
 					"fieldtype": "Float",
 					"width": 80,
 					"convertible": "qty",
+					"hidden":1
 				},
 				{
 					"label": _("Company"),
@@ -582,6 +589,7 @@ class StockBalanceReport:
 					"fieldtype": "Link",
 					"options": "Company",
 					"width": 100,
+					"hidden":1
 				},
 				{
 					"label": _("Model"),
@@ -596,23 +604,30 @@ class StockBalanceReport:
 					"width": 100,
 				},
 				{
-					"label": _("type"),
-					"fieldname": "type",
-					"fieldtype": "Data",
-					"width": 100,
-				},
-				{
 					"label": _("Colour"),
 					"fieldname": "colour",
 					"fieldtype": "Data",
 					"width": 100,
 				},
 				{
-					"label": _("variant_of"),
-					"fieldname": "variant_of",
+					"label": _("Colour2"),
+					"fieldname": "colour2",
 					"fieldtype": "Data",
 					"width": 100,
 				},
+				{
+					"label": _("type"),
+					"fieldname": "type",
+					"fieldtype": "Data",
+					"width": 100,
+				},
+    			{
+       			"label": _("reservation_status"),
+				"fieldname": "custom_reservation_status", 
+				"fieldtype": "Data",
+				"width": 100,
+       		},
+
 	
 			]
 		)
@@ -755,9 +770,10 @@ def filter_items_with_no_transactions(
 				"serial_no",
 				"model",
 				"category",
-				"type",
 				"colour",
-				"variant_of",
+				"type",
+				"colour2",
+				"custom_reservation_status",
 			]:
 				continue
 
