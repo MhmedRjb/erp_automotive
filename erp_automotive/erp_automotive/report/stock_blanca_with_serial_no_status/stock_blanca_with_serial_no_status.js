@@ -163,6 +163,7 @@ frappe.query_reports["Stock Blanca with Serial no status"] = {
             fieldtype: "Link",
             width: "80",
             options: "Item",
+			hidden :1,
             get_query: function () {
                 let item_group = frappe.query_report.get_filter_value("item_group");
                 return {
@@ -197,6 +198,7 @@ frappe.query_reports["Stock Blanca with Serial no status"] = {
             fieldtype: "Link",
             width: "80",
             options: "Warehouse Type",
+			hidden :1,
         },
         {
             fieldname: "valuation_field_type",
@@ -205,6 +207,7 @@ frappe.query_reports["Stock Blanca with Serial no status"] = {
             width: "80",
             options: "Currency\nFloat",
             default: "Currency",
+			hidden :1
         },
         {
             fieldname: "include_uom",

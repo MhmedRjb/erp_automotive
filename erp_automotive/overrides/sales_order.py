@@ -12,13 +12,13 @@ from typing import Literal
 class CustomSalesOrder(SalesOrder):
 	def on_submit(self):
 
-        # Call the original on_submit method
+		# Call the original on_submit method
 		super().on_submit()
 		
 		# Add your custom logic
 		self.test(self.get("items"), "Purchase Receipt", True)
 		
-		
+	
 	def test(
 		self,
 		items_details: list[dict] | None = None,
@@ -56,9 +56,6 @@ class CustomSalesOrder(SalesOrder):
 
 		for item in items if items_details else self.get("items"):
 
-			# if item.get("reserve_stock"):
-			# 	continue
-
 
 			is_stock_item, has_serial_no, has_batch_no = frappe.get_cached_value(
 				"Item", item.item_code, ["is_stock_item", "has_serial_no", "has_batch_no"]
@@ -69,7 +66,6 @@ class CustomSalesOrder(SalesOrder):
 
 			available_qty_to_reserve = get_available_qty_to_reserve(item.item_code, item.warehouse)
 
-			# No stock available to reserve, notify the user and skip the item.
 			qty_to_be_reserved = min(unreserved_qty, available_qty_to_reserve)
 
 			sre = frappe.new_doc("Stock Reservation Entry")
@@ -115,3 +111,21 @@ class CustomSalesOrder(SalesOrder):
 			sre_count += 1
 
 
+	def after_insert(self):
+		self.alert_message()
+
+  
+  
+	def alert_message (self) -> None:
+		for item in self.get("items"):
+			available_qty_to_reserve = get_available_qty_to_reserve(item.item_code, item.warehouse)
+			if available_qty_to_reserve <= 0:
+				frappe.msgprint(
+					_("Row #{0}: Stock not available to reserve for the Item {1} in Warehouse {2}.").format(
+						item.idx, frappe.bold(item.item_code), frappe.bold(item.warehouse)
+					),
+					title=_("Stock Reservation"),
+					indicator="red",
+				)
+				continue
+			return 
