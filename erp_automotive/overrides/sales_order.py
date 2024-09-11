@@ -160,4 +160,3 @@ class CustomSalesOrder(SalesOrder):
 				indicator="grean",
 				alert=True,
 			)
-
