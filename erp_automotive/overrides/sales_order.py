@@ -160,7 +160,3 @@ class CustomSalesOrder(SalesOrder):
 				indicator="grean",
 				alert=True,
 			)
-<<<<<<< HEAD
-=======
-
->>>>>>> 658bd78 (add auto  matrial request)
