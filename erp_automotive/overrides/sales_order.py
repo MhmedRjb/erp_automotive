@@ -8,14 +8,12 @@ from erpnext.stock.doctype.stock_reservation_entry.stock_reservation_entry impor
 )
 from frappe.utils import cint, flt, nowdate, nowtime
 from typing import Literal
-
+from frappe.model.workflow import get_workflow_name
 class CustomSalesOrder(SalesOrder):
 	def on_submit(self):
 
-		# Call the original on_submit method
 		super().on_submit()
 		
-		# Add your custom logic
 		self.test(self.get("items"), "Purchase Receipt", True)
 		
 	
@@ -133,7 +131,6 @@ class CustomSalesOrder(SalesOrder):
 					"warehouse": self.set_warehouse,
 					"sales_order": self.name
 				}],
-				"sales_order": self.name
 			}
 			#insert the data to the matrial request
 			mr = frappe.new_doc("Material Request")
@@ -167,3 +164,20 @@ class CustomSalesOrder(SalesOrder):
 				indicator="orange",
 				alert=True,
 			)
+
+
+ 
+ 
+	def validate(self):
+		super().validate()
+
+		workflow_name = get_workflow_name("Sales Order")
+		if not workflow_name:
+			return
+		#check if it active 
+		ws_salesorder_po = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_po")
+		ws_salesorder_ps = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_ps")
+		if not ws_salesorder_po or not ws_salesorder_ps:
+			# Handle the error message
+			message = _("ws_salesorder_po and ws_salesorder_ps in ERP Automotive Settings can't not be empty")
+			frappe.throw(message, title="Sales Order")

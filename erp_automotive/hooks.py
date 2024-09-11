@@ -117,8 +117,9 @@ doctype_js = {
 override_doctype_class = {
     "Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt",
     "Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder",
-    "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry"
-}
+    "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry",
+    "Purchase Order": "erp_automotive.overrides.purchase_order.CustomPurchaseOrder",
+} 
 
 
 # Document Events
