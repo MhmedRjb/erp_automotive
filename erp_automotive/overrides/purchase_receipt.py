@@ -14,6 +14,27 @@ class CustomPurchaseReceipt(PurchaseReceipt):
                     serial_number_doc.purchase_receipt = self.name
                     serial_number_doc.company = self.company
                     serial_number_doc.purchase_date = self.posting_date
+                    serial_number_doc.status = _("without customs card")
                     serial_number_doc.insert()  
+
+
+#TODO:test the following code and change to it 
+    # def before_save(self):
+    #     for item in self.items:
+    #         if item.serial_no:
+    #             serial_nos = item.serial_no.split('\n')
+    #             for serial_no in serial_nos:
+    #                 if not frappe.db.exists('Serial No', serial_no.strip()):
+    #                     doc = frappe.new_doc('Serial No')
+    #                     doc.update({
+    #                         'item_code': item.item_code,
+    #                         'serial_no': serial_no.strip(),
+    #                         'purchase_receipt': self.name,
+    #                         'company': self.company,
+    #                         'purchase_date': self.posting_date,
+    #                         'status': _("without customs card")
+    #                     })
+    #                     doc.insert()        
+
 
 

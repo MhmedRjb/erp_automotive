@@ -28,10 +28,10 @@ app_license = "MIT"
 
 # include js in doctype views
 doctype_js = {
-                "Purchase Receipt" : "public/js/purchase_receipt.js",
-                "Sales Order" : "public/js/sales_order_reservations.js",
-                "Stock Reservation Entry" : "public/js/stock_reservation_entry.js",
-                }
+    "Purchase Receipt": "public/js/purchase_receipt.js",
+    "Sales Order": "public/js/sales_order_reservations.js",
+    "Stock Reservation Entry": "public/js/stock_reservation_entry.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_list_js = {"Serial No" : "public/js/serial_no_list.js"}
 
@@ -117,7 +117,8 @@ doctype_js = {
 override_doctype_class = {
     "Purchase Receipt": "erp_automotive.overrides.purchase_receipt.CustomPurchaseReceipt",
     "Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder",
-    "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry"
+    "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry",
+    "Purchase Order": "erp_automotive.overrides.purchase_order.CustomPurchaseOrder",
 }
 
 
@@ -133,25 +134,34 @@ override_doctype_class = {
 # 	}
 # }
 
+# doc_events = {
+#     'customs card': {
+#         'on_submit': [
+#             'erp_automotive.doctype.customs_card.customs_card.on_submit'
+#         ]
+#     },
+# }
+
+
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
-# 	"all": [
-# 		"erp_automotive.tasks.all"
-# 	],
-	"daily": [
-		"erp_automotive.tasks.schedule_update"
-	]
-# 	"hourly": [
-# 		"erp_automotive.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"erp_automotive.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"erp_automotive.tasks.monthly"
-# 	],
+    # 	"all": [
+    # 		"erp_automotive.tasks.all"
+    # 	],
+    "daily": [
+        "erp_automotive.tasks.schedule_update"
+    ]
+    # 	"hourly": [
+    # 		"erp_automotive.tasks.hourly"
+    # 	],
+    # 	"weekly": [
+    # 		"erp_automotive.tasks.weekly"
+    # 	],
+    # 	"monthly": [
+    # 		"erp_automotive.tasks.monthly"
+    # 	],
 }
 
 # Testing
@@ -227,42 +237,66 @@ scheduler_events = {
 # Fixtures= ["Property Setter"]
 
 # fixtures = [
-    # {
-    #     "dt": "Property Setter",
-    #     "filters": [
-    #         [
-    #             "module",
-    #             "in",
-    #             [
-    #                 "Erp Automotive",
-    #             ]
-    #         ]
-    #     ]
-    # }
-    # ,
-
-    # {
-    #     "dt": "DocType",
-    #     "filters": [
-    #         [
-    #             "module",
-    #             "in",
-    #             [
-    #                 "Erp Automotive",
-    #             ]
-    #         ]
-    #     ]
-    # }
-    # {
-
-    #     "dt": "Custom Field",
-    #     "filters": [
-    #         [
-    #             "module",
-    #             "in",
-    #             [
-    #                 "Erp Automotive",
-    #             ]
-    #         ]
-    #     ]}
+#     {
+#         "dt": "Custom Field",
+#     }
 # ]
+
+# fixtures = ["Custom Field"]
+## not in Department or Designation
+#     {
+#         "dt": "Custom Field",
+#         "filters": [
+#             [
+#                 "dt",
+#                 "not in",
+#                 [
+#                     "Department",
+#                     "Designation",
+#                     "Company",
+#                     "Employee",
+#                     "Terms and Conditions",
+#                     "Print Format",
+#                     "Project",
+#                     "Task",
+#                     "Timesheet",
+#                     "Customer",
+#                     "Item Default",
+#                     "Salary Slip",
+#                     "Item",
+#                     "Contact",
+#                     "Address",
+#                     "Item Group",
+#                     "Print Settings",
+#                     "Loan",
+#                     "Loan Repayment"
+                    
+#                 ],
+#                 "module",
+#                 "in"[
+#                     "Erp Automotive"
+#                 ]
+#             ]
+#         ]
+#     }
+# ]
+#     "dt": "Property Setter",
+#     "filters": [
+#         [
+#             "module",
+#             "in",
+#             [
+#                 "Erp Automotive",
+#             ]
+#         ]
+#     ]
+# }
+# ,
+
+# {
+
+
+# ]
+
+#export fixtures
+

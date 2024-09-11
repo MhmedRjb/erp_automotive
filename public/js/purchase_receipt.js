@@ -12,7 +12,6 @@ frappe.ui.form.on('Purchase Receipt', {
                     let serial_numbers = item.serial_no.split('\n');
                     serial_numbers.forEach((serial_no, index) => {
                         if (index < item.qty) {
-                            // Fetch customs_card using serial_no
                             frappe.call({
                                 method: 'frappe.client.get_value',
                                 args: {
@@ -20,7 +19,7 @@ frappe.ui.form.on('Purchase Receipt', {
                                     filters: { name: serial_no },
                                     fieldname: 'customs_card'
                                 },
-                                async: false, // Note: Using async: false is not recommended for production; handle promises properly.
+                                async: false,
                                 callback: function(response) {
                                     let customs_card = response.message ? response.message.customs_card : '';
                                     if  (!customs_card) {
@@ -34,12 +33,6 @@ frappe.ui.form.on('Purchase Receipt', {
                             });
                         }
                     });
-                });
-                frappe.get_doc('customs card receipt', doc.name).save().then(() => {
-                    frappe.msgprint(__('Customs Card Receipt created!'));
-                }).catch((error) => {
-                    console.error('Error creating Customs Card Receipt:', error);
-                    frappe.msgprint(__('An error occurred while creating the Customs Card Receipt.'));
                 });
             });
         }, __("Create"));
