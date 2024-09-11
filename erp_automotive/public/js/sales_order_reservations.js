@@ -1,15 +1,171 @@
-frappe.ui.form.on('Sales Order', {
-    refresh: function(frm) {
-        console.log("tesst");
-        frm.set_query("custom_serial_no", "items", function (doc, cdt, cdn) {
-          return {
-            "filters": {
-              "item_name": "item_code"
-            },
-          };
+async function fetchAndSetOptions(frm, field, args) {
+    try {
+        let response = await frappe.call({
+            method: 'erp_automotive.api.templet_list',
+            args: args
         });
+        let itemNames = response.message;
+        frm.set_df_property(field, 'options', itemNames);
+        frm.refresh_field(field);
+    } catch (error) {
+        console.error('Error fetching options:', error);
     }
+}
+
+
+frappe.ui.form.on('Sales Order', {
+    custom_item_group: async function(frm) {
+        frm.set_value('custom_type', '');
+        frm.set_value('custom_category', '');
+        frm.set_value('custom_model', '');
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
+        await fetchAndSetOptions(frm, 'custom_type', {
+            item_group: frm.doc.custom_item_group
+        });
+    },
+    custom_type: async function(frm) {
+        frm.set_value('custom_category', '');
+        frm.set_value('custom_model', '');
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
+        await fetchAndSetOptions(frm, 'custom_category', {
+            item_group: frm.doc.custom_item_group,
+            templet: frm.doc.custom_type
+        });
+        if (frm.fields_dict.custom_category.df.options.length == 1) {
+            frm.set_value('custom_category', frm.fields_dict.custom_category.df.options[0]);
+        }
+
+    },
+    custom_category: async function(frm) {
+        frm.set_value('custom_model', '');
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
+        await fetchAndSetOptions(frm, 'custom_model', {
+            item_group: frm.doc.custom_item_group,
+            templet: frm.doc.custom_type,
+            category: frm.doc.custom_category
+        });
+        if (frm.fields_dict.custom_model.df.options.length == 1) {
+            frm.set_value('custom_model', frm.fields_dict.custom_model.df.options[0]);
+        }
+
+    },
+    custom_model: async function(frm) {
+        frm.set_value('custom_colour', '');
+        frm.set_value('custom_item_name', '');
+
+        await fetchAndSetOptions(frm, 'custom_colour', {
+            item_group: frm.doc.custom_item_group,
+            templet: frm.doc.custom_type,
+            category: frm.doc.custom_category,
+            model: frm.doc.custom_model
+        });
+        if (frm.fields_dict.custom_colour.df.options.length == 1) {
+            frm.set_value('custom_colour', frm.fields_dict.custom_colour.df.options[0]);
+        }
+
+    },
+    custom_colour: async function(frm) {
+        frm.set_value('custom_colour2', '');
+        frm.set_value('custom_item_name', '');
+
+        await fetchAndSetOptions(frm, 'custom_colour2', {
+            item_group: frm.doc.custom_item_group,
+            templet: frm.doc.custom_type,
+            category: frm.doc.custom_category,
+            model: frm.doc.custom_model,
+            colour:frm.doc.custom_colour
+        });
+        if (frm.fields_dict.custom_colour2.df.options.length == 1) {
+            frm.set_value('custom_colour2', frm.fields_dict.custom_colour2.df.options[0]);
+        }
+    
+    },
+    custom_colour2: async function(frm) {
+        frm.set_value('custom_item_name', '');
+
+        await fetchAndSetOptions(frm, 'custom_item_name', {
+            item_group: frm.doc.custom_item_group,
+            templet: frm.doc.custom_type,
+            category: frm.doc.custom_category,
+            model: frm.doc.custom_model,
+            colour:frm.doc.custom_colour,
+            colour2:frm.doc.custom_colour2
+        });
+    if (frm.fields_dict.custom_item_name.df.options.length == 1) {
+        frm.set_value('custom_item_name', frm.fields_dict.custom_item_name.df.options[0]);
+    }
+
+
+    },
+    custom_item_name: async function(frm) {
+        console.log('Setting query for custom_serial_no');
+        frm.set_query ("custom_serial_no",function(){
+            return {
+                "filters": {
+                    item_code: frm.doc.custom_item_name,    
+                    status: "Active",
+                    custom_reservation_status:"un Reserved",
+                    warehouse: frm.doc.set_warehouse
+                    
+                }
+            }
+        })
+            
+    },
+    custom_push: async function(frm, cdt, cdn) {
+        if (frm.doc.items.length > 0 && !frm.doc.items[0].item_code) {
+            frm.doc.items.splice(0, 1); // Remove the first empty row
+                }
+        let item = frm.add_child('items');
+        item.item_code = frm.doc.custom_item_name;
+        item.custom_serial_no_saver = frm.doc.custom_serial_no;
+        item.item_name = frm.doc.custom_item_name;
+        item.qty = 1;
+        item.delivery_date = frm.doc.delivery_date;
+        item.uom = 'Nos';
+        item.conversion_factor = 1;
+
+        frm.refresh_field('items');
+    },
+    refresh: function(frm) {
+        frm.add_custom_button(__('Material Request'), function() {
+            // Create a new Material Request
+            frappe.call({
+                method: 'frappe.client.insert',
+                args: {
+                    doc: {
+                        doctype: 'Material Request',
+                        material_request_type: 'Purchase',
+                        items: frm.doc.items.map(item => ({
+                            item_code: item.item_code,
+                            qty: item.qty,
+                            schedule_date: frm.doc.delivery_date,
+                            warehouse: frm.doc.set_warehouse
+                        })),
+                        sales_order: frm.doc.name
+                    }
+                },
+                callback: function(response) {
+                    if (!response.exc) {
+                        frappe.msgprint(__('Material Request created successfully!'));
+                        frappe.set_route('Form', 'Material Request', response.message.name);
+                    } else {
+                        frappe.msgprint(__('There was an error creating the Material Request.'));
+                    }
+                }
+            });
+        }, __('Create'));
+    }
+
 });
+
+
 
 frappe.ui.form.on("Sales Order Item", {
     custom_add_serials: function(frm, cdt, cdn) {
@@ -29,14 +185,12 @@ frappe.ui.form.on("Sales Order Item", {
         } else {
             row.reserve_stock = 1; 
         }
-        // Refresh the field to reflect the change
         frm.refresh_field('items');
 
     },
     item_code: function(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
         console.log('Item Code:', row.item_code);
-        //remove the custom_serial_no_saver
         row.custom_serial_no_saver = '';
     },
 
@@ -44,7 +198,6 @@ frappe.ui.form.on("Sales Order Item", {
 });
 
 
-// Function to open the dialog and add serial numbers
 function openSerialNumberDialog(frm, row, existingSerials) {
 
     let d = new frappe.ui.Dialog({
@@ -90,7 +243,8 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                                 filters: {
                                     item_code: row.item_code,
                                     status: "Active",
-                                    custom_reservation_status:"un Reserved"
+                                    custom_reservation_status:"un Reserved",
+                                    warehouse: row.warehouse
                                 }
                             };
                         }
@@ -131,14 +285,6 @@ function openSerialNumberDialog(frm, row, existingSerials) {
     d.show();
 }
 
-
-
-
-
-
-
-
-
 function checkAndSetReserveStock(row) {
     if (row.custom_serial_no_saver && row.custom_serial_no_saver.length > 0) {
         row.reserve_stock = 1;
@@ -147,5 +293,6 @@ function checkAndSetReserveStock(row) {
     }
     cur_frm.refresh_field('items');
 }
+
 
 
