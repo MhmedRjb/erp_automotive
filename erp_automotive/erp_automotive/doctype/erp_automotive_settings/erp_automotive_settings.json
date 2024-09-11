@@ -9,6 +9,7 @@
   "cancel_reservation_after_while",
   "days_after_cancel_reservation",
   "column_break_ekjx",
+  "ws_sales_order",
   "column_break_vzll"
  ],
  "fields": [
@@ -38,12 +39,19 @@
   {
    "fieldname": "column_break_vzll",
    "fieldtype": "Column Break"
+  },
+  {
+   "description": "Workflow State  for sales order in case item out of stock",
+   "fieldname": "ws_sales_order",
+   "fieldtype": "Link",
+   "label": "Workflow State",
+   "options": "Workflow State"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-27 09:46:23.909898",
+ "modified": "2024-09-11 13:31:59.858395",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "ERP automotive settings",

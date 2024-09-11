@@ -130,7 +130,8 @@ class CustomSalesOrder(SalesOrder):
 					"item_code": item.item_code,
 					"qty": item.qty,
 					"schedule_date": self.delivery_date,
-					"warehouse": self.set_warehouse
+					"warehouse": self.set_warehouse,
+					"sales_order": self.name
 				}],
 				"sales_order": self.name
 			}
@@ -140,12 +141,14 @@ class CustomSalesOrder(SalesOrder):
 			mr.save()
 			mr.submit()
 			frappe.db.commit()
+			item.material_request = mr.name
+			
 			frappe.msgprint(
 				_("Row #{0}: Stock not available to reserve for the Item {1} in Warehouse {2}.").format(
 					item.idx, frappe.bold(item.item_code), frappe.bold(item.warehouse)
 				),
 				title=_("Stock Reservation"),
-				indicator="orange",
+				indicator="red",
 				alert=True
 			)
 			frappe.msgprint(
@@ -156,4 +159,11 @@ class CustomSalesOrder(SalesOrder):
 				indicator="grean",
 				alert=True,
 			)
-
+			frappe.msgprint(
+				_("Sales Order {0} has been connected to {1}.").format(
+					frappe.bold(mr.name), frappe.bold(self.name)
+				),
+				title=_("Sales Order"),
+				indicator="orange",
+				alert=True,
+			)
