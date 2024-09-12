@@ -132,36 +132,36 @@ frappe.ui.form.on('Sales Order', {
         item.conversion_factor = 1;
 
         frm.refresh_field('items');
-    },
-    refresh: function(frm) {
-        frm.add_custom_button(__('Material Request'), function() {
-            // Create a new Material Request
-            frappe.call({
-                method: 'frappe.client.insert',
-                args: {
-                    doc: {
-                        doctype: 'Material Request',
-                        material_request_type: 'Purchase',
-                        items: frm.doc.items.map(item => ({
-                            item_code: item.item_code,
-                            qty: item.qty,
-                            schedule_date: frm.doc.delivery_date,
-                            warehouse: frm.doc.set_warehouse
-                        })),
-                        sales_order: frm.doc.name
-                    }
-                },
-                callback: function(response) {
-                    if (!response.exc) {
-                        frappe.msgprint(__('Material Request created successfully!'));
-                        frappe.set_route('Form', 'Material Request', response.message.name);
-                    } else {
-                        frappe.msgprint(__('There was an error creating the Material Request.'));
-                    }
-                }
-            });
-        }, __('Create'));
     }
+    // refresh: function(frm) {
+    //     frm.add_custom_button(__('Material Request'), function() {
+    //         // Create a new Material Request
+    //         frappe.call({
+    //             method: 'frappe.client.insert',
+    //             args: {
+    //                 doc: {
+    //                     doctype: 'Material Request',
+    //                     material_request_type: 'Purchase',
+    //                     items: frm.doc.items.map(item => ({
+    //                         item_code: item.item_code,
+    //                         qty: item.qty,
+    //                         schedule_date: frm.doc.delivery_date,
+    //                         warehouse: frm.doc.set_warehouse
+    //                     })),
+    //                     sales_order: frm.doc.name
+    //                 }
+    //             },
+    //             callback: function(response) {
+    //                 if (!response.exc) {
+    //                     frappe.msgprint(__('Material Request created successfully!'));
+    //                     frappe.set_route('Form', 'Material Request', response.message.name);
+    //                 } else {
+    //                     frappe.msgprint(__('There was an error creating the Material Request.'));
+    //                 }
+    //             }
+    //         });
+    //     }, __('Create'));
+    // }
 
 });
 

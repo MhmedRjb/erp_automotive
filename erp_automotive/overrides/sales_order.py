@@ -114,40 +114,46 @@ class CustomSalesOrder(SalesOrder):
 
 
 	def alert_message(self) -> None:
+		items_to_request = []
 		for item in self.get("items"):
 			available_qty_to_reserve = get_available_qty_to_reserve(item.item_code, item.warehouse)
 			if available_qty_to_reserve <= 0:
-				workflow_state = frappe.db.get_single_value("ERP automotive settings", "ws_sales_order")
-				self.db_set("workflow_state", workflow_state)
-			
-			# Create Material Request
+				items_to_request.append({
+											"item_code": item.item_code,
+											"qty": item.qty,
+											"schedule_date": self.delivery_date,
+											"warehouse": self.set_warehouse,
+											"sales_order": self.name
+										})
+				frappe.msgprint(
+								_("Row #{0}: Stock not available to reserve for the Item {1} in Warehouse {2}.").format(
+									item.idx, frappe.bold(item.item_code), frappe.bold(item.warehouse)
+								),
+								title=_("Stock Reservation"),
+								indicator="red",
+								alert=True
+							)
+
+
+		if items_to_request:
+			workflow_state = frappe.db.get_single_value("ERP automotive settings", "ws_sales_order")
+			self.db_set("workflow_state", workflow_state)
+		
 			material_request = {
 				"doctype": "Material Request",
 				"material_request_type": "Purchase",
-				"items": [{
-					"item_code": item.item_code,
-					"qty": item.qty,
-					"schedule_date": self.delivery_date,
-					"warehouse": self.set_warehouse,
-					"sales_order": self.name
-				}],
+				"items": items_to_request,
 			}
-			#insert the data to the matrial request
 			mr = frappe.new_doc("Material Request")
 			mr.update(material_request)
 			mr.save()
 			mr.submit()
 			frappe.db.commit()
-			item.material_request = mr.name
-			
-			frappe.msgprint(
-				_("Row #{0}: Stock not available to reserve for the Item {1} in Warehouse {2}.").format(
-					item.idx, frappe.bold(item.item_code), frappe.bold(item.warehouse)
-				),
-				title=_("Stock Reservation"),
-				indicator="red",
-				alert=True
-			)
+			for item in self.get("items"):
+				if item.item_code in [i["item_code"] for i in items_to_request]:
+					item.material_request = mr.name
+
+
 			frappe.msgprint(
 				_("Material Request {0} has been created for the Item {1}.").format(
 					frappe.bold(mr.name), frappe.bold(item.item_code)
@@ -166,7 +172,7 @@ class CustomSalesOrder(SalesOrder):
 			)
 
 
- 
+
  
 	def validate(self):
 		super().validate()
