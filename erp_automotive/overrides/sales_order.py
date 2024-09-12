@@ -10,12 +10,13 @@ from frappe.utils import cint, flt, nowdate, nowtime
 from typing import Literal
 from frappe.model.workflow import get_workflow_name
 class CustomSalesOrder(SalesOrder):
+    
 	def on_submit(self):
 
-		super().on_submit()
+		# super().on_submit()
 		
 		self.test(self.get("items"), "Purchase Receipt", True)
-		
+	
 	
 	def test(
 		self,
@@ -111,6 +112,7 @@ class CustomSalesOrder(SalesOrder):
 
 	def after_insert(self):
 		self.alert_message()
+		# self.test(self.get("items"), "Purchase Receipt", True)
 
 
 	def alert_message(self) -> None:
@@ -137,7 +139,6 @@ class CustomSalesOrder(SalesOrder):
 
 		if items_to_request:
 			workflow_state = frappe.db.get_single_value("ERP automotive settings", "ws_sales_order")
-			self.db_set("workflow_state", workflow_state)
 		
 			material_request = {
 				"doctype": "Material Request",
@@ -153,7 +154,7 @@ class CustomSalesOrder(SalesOrder):
 				if item.item_code in [i["item_code"] for i in items_to_request]:
 					item.material_request = mr.name
 
-
+			self.db_set("workflow_state", workflow_state)
 			frappe.msgprint(
 				_("Material Request {0} has been created for the Item {1}.").format(
 					frappe.bold(mr.name), frappe.bold(item.item_code)
@@ -180,10 +181,8 @@ class CustomSalesOrder(SalesOrder):
 		workflow_name = get_workflow_name("Sales Order")
 		if not workflow_name:
 			return
-		#check if it active 
 		ws_salesorder_po = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_po")
 		ws_salesorder_ps = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_ps")
 		if not ws_salesorder_po or not ws_salesorder_ps:
-			# Handle the error message
 			message = _("ws_salesorder_po and ws_salesorder_ps in ERP Automotive Settings can't not be empty")
 			frappe.throw(message, title="Sales Order")

@@ -130,9 +130,10 @@ frappe.ui.form.on('Sales Order', {
         item.delivery_date = frm.doc.delivery_date;
         item.uom = 'Nos';
         item.conversion_factor = 1;
+        item.stock_reserved_qty = item.qty;
 
         frm.refresh_field('items');
-    }
+    },
     // refresh: function(frm) {
     //     frm.add_custom_button(__('Material Request'), function() {
     //         // Create a new Material Request
@@ -162,6 +163,68 @@ frappe.ui.form.on('Sales Order', {
     //         });
     //     }, __('Create'));
     // }
+    //make a custom button to cancel the sales order
+    // refresh: function(frm) {
+    //     // Button to cancel the Sales Order
+    //     frm.add_custom_button(__('submit Sales Order'), function() {
+    //         frappe.call({
+    //             method: 'frappe.client.submit',
+    //             args: {
+    //                 doc: frm.doc
+    //             },
+    //             callback: function(cancel_response) {
+    //                 if (!cancel_response.exc) {
+    //                     frappe.msgprint(__('Sales Order submit successfully!'));
+    //                     frm.reload_doc();
+    //                 } else {
+    //                     frappe.msgprint(__('There was an error submited the Sales Order.'));
+    //                 }
+    //             }
+    //         });
+
+
+
+    //     }, __('Create'));
+
+
+        // frm.add_custom_button(__('Cancel Sales Order'), function() {
+        //     frappe.call({
+        //         method: 'frappe.client.cancel',
+        //         args: {
+        //             "doctype": "Sales Order",
+        //             "name": frm.doc.name
+        //         },
+        //         callback: function(cancel_response) {
+        //             if (!cancel_response.exc) {
+        //                 frappe.msgprint(__('Sales Order cancelled successfully!'));
+        //                 frm.reload_doc();
+        //             } else {
+        //                 frappe.msgprint(__('There was an error cancelling the Sales Order.'));
+        //             }
+        //         }
+        //     });
+        //     frappe.call({
+        //         method: 'frappe.client.set_value',
+        //         args: {
+        //             "doctype": "Sales Order",
+        //             "name": frm.doc.name,
+        //             "fieldname": "status",
+        //             "value": "Cancelled"
+        //         },
+        //         callback: function(set_value_response) {
+        //             if (!set_value_response.exc) {
+        //                 frappe.msgprint(__('Sales Order status updated to Cancelled successfully!'));
+        //                 frm.reload_doc();
+        //             } else {
+        //                 frappe.msgprint(__('There was an error updating the Sales Order status.'));
+        //             }
+        //         }
+        //     });
+        
+        // }, __('Cancel'));
+    // }
+
+
 
 });
 
