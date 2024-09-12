@@ -112,7 +112,7 @@ class CustomSalesOrder(SalesOrder):
 
 	def after_insert(self):
 		self.alert_message()
-		# self.test(self.get("items"), "Purchase Receipt", True)
+		self.test(self.get("items"), "Purchase Receipt", True)
 
 
 	def alert_message(self) -> None:
