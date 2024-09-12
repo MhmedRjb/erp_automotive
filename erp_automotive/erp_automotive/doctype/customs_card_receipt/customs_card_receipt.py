@@ -19,6 +19,30 @@ class customscardreceipt(Document):
 	def on_submit(self):
 		for item in self.items:
 			frappe.db.set_value("Serial No", item.serial_no, "customs_card", item.customs_card)
+			cc=frappe.new_doc("customs card")
+			cc.customs_card_number=item.customs_card
+			cc.customs_card_date=self.date
+			cc.iamge=item.custom_image
+			item_attributes = frappe.get_all(
+			"Item Variant Attribute",
+			fields=["attribute", "attribute_value"],
+			filters={
+				"parent": item.item_code  
+			},
+			order_by="idx"
+			)
+
+			for attribute in item_attributes:
+				print(attribute, attribute.attribute, attribute.attribute_value)
+			print("===============************================")
+			#assign values to custom_item_variant_attribute table	
+			for attribute in item_attributes:
+				cc.append("item_variant_attribute", {
+					"attribute": attribute.attribute,
+					"attribute_value": attribute.attribute_value
+				})
+			cc.save(ignore_permissions=True,ignore_version=True )
+			cc.submit()
 
 
 	def after_cancel(self):

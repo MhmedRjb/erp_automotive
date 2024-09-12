@@ -9,13 +9,7 @@
   "cancel_reservation_after_while",
   "days_after_cancel_reservation",
   "column_break_ekjx",
-  "column_break_vzll",
-  "section_break_vuqn",
-  "ws_sales_order",
-  "column_break_ripb",
-  "ws_salesorder_po",
-  "column_break_ffor",
-  "ws_salesorder_ps"
+  "column_break_vzll"
  ],
  "fields": [
   {
@@ -44,45 +38,12 @@
   {
    "fieldname": "column_break_vzll",
    "fieldtype": "Column Break"
-  },
-  {
-   "description": "Workflow State  for sales order in case item out of stock",
-   "fieldname": "ws_sales_order",
-   "fieldtype": "Link",
-   "label": "Workflow State",
-   "options": "Workflow State"
-  },
-  {
-   "description": "Workflow State  for sales order after make Purchase Order",
-   "fieldname": "ws_salesorder_po",
-   "fieldtype": "Link",
-   "label": "Workflow State after Purchase Order",
-   "options": "Workflow State"
-  },
-  {
-   "fieldname": "section_break_vuqn",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_ripb",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_ffor",
-   "fieldtype": "Column Break"
-  },
-  {
-   "description": "Workflow State  for sales order after make Purchase Receipt",
-   "fieldname": "ws_salesorder_ps",
-   "fieldtype": "Link",
-   "label": "Workflow State after Purchase Receipt",
-   "options": "Workflow State"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-11 15:18:22.788344",
+ "modified": "2024-08-27 09:46:23.909898",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "ERP automotive settings",

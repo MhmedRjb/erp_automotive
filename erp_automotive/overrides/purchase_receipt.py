@@ -17,49 +17,81 @@ class CustomPurchaseReceipt(PurchaseReceipt):
 					serial_number_doc.insert()  
 
 
-	def on_submit(self):
-		super().on_submit()
-		self.update_material_request_workflow()
-		
-	
-	def update_material_request_workflow(self):
-		for item in self.items:
-			if not item.purchase_order:
-				continue
-			
-			try:
-				purchase_order = frappe.get_doc("Purchase Order", item.purchase_order)
-			except frappe.exceptions.DoesNotExistError:
-				frappe.msgprint(
-					_("Purchase Receipt has no Purchase Order and no Material Request."),
-					indicator="red",
-					alert=True
-				)
-				return
-			
-		for item in purchase_order.items:
-			if not item.material_request:
-				continue
+def on_submit(self):
+    super().on_submit()
+    self.update_material_request_workflow()
 
-			material_request = frappe.get_doc("Material Request", item.material_request)
+def update_material_request_workflow(self):
+    for item in self.items:
+        if not item.purchase_order:
+            continue
 
-			for request_item in material_request.items:
-				if not request_item.sales_order:
-					continue
+        try:
+            purchase_order = frappe.get_doc("Purchase Order", item.purchase_order)
+        except frappe.exceptions.DoesNotExistError:
+            frappe.msgprint(
+                _("Purchase Receipt has no Purchase Order and no Material Request."),
+                indicator="red",
+                alert=True
+            )
+            return
 
-				sales_order = frappe.get_doc("Sales Order", request_item.sales_order)
-	
-				workflow_state = frappe.db.get_single_value("ERP automotive settings", "ws_salesorder_ps")
-	
-				sales_order.db_set("workflow_state", workflow_state)
+        for po_item in purchase_order.items:
+            if not po_item.material_request:
+                continue
 
-				frappe.msgprint(
-					_("Sales Order {0} has been updated to {1}.").format(
-						frappe.bold(sales_order.name), frappe.bold(workflow_state)
-					),
-					title=_("Sales Order"),
-					indicator="orange",
-					alert=True
-				)
+            try:
+                material_request = frappe.get_doc("Material Request", po_item.material_request)
+            except frappe.exceptions.DoesNotExistError:
+                frappe.msgprint(
+                    _("Material Request {0} does not exist.").format(frappe.bold(po_item.material_request)),
+                    title=_("Material Request Not Found"),
+                    indicator="red",
+                    alert=True
+                )
+                continue
+            except Exception as e:
+                frappe.log_error(message=str(e), title="Error fetching Material Request")
+                frappe.msgprint(
+                    _("An error occurred while fetching Material Request {0}.").format(frappe.bold(po_item.material_request)),
+                    title=_("Error"),
+                    indicator="red",
+                    alert=True
+                )
+                continue
 
+            for request_item in material_request.items:
+                if not request_item.sales_order:
+                    continue
 
+                try:
+                    sales_order = frappe.get_doc("Sales Order", request_item.sales_order)
+                except frappe.exceptions.DoesNotExistError:
+                    frappe.msgprint(
+                        _("Sales Order {0} does not exist.").format(frappe.bold(request_item.sales_order)),
+                        title=_("Sales Order Not Found"),
+                        indicator="red",
+                        alert=True
+                    )
+                    continue
+                except Exception as e:
+                    frappe.log_error(message=str(e), title="Error fetching Sales Order")
+                    frappe.msgprint(
+                        _("An error occurred while fetching Sales Order {0}.").format(frappe.bold(request_item.sales_order)),
+                        title=_("Error"),
+                        indicator="red",
+                        alert=True
+                    )
+                    continue
+
+                workflow_state = frappe.db.get_single_value("ERP automotive settings", "ws_salesorder_ps")
+                sales_order.db_set("workflow_state", workflow_state)
+
+                frappe.msgprint(
+                    _("Sales Order {0} has been updated to {1}.").format(
+                        frappe.bold(sales_order.name), frappe.bold(workflow_state)
+                    ),
+                    title=_("Sales Order"),
+                    indicator="orange",
+                    alert=True
+                )

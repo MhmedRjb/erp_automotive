@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class cardreceiptitem(Document):
+class test(Document):
 	pass
