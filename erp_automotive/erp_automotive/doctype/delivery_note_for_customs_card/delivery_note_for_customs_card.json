@@ -73,13 +73,14 @@
    "default": "first-hand",
    "fieldname": "holder_now",
    "fieldtype": "Data",
-   "label": "holder now"
+   "label": "holder now",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-08-29 11:45:16.898111",
+ "modified": "2024-09-14 10:43:12.477799",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "Delivery Note for Customs Card",

@@ -11,9 +11,9 @@ from typing import Literal
 from erp_automotive.utilities.validate import validate_erp_automotive_settings
 class CustomSalesOrder(SalesOrder):
     
-	def on_submit(self):
-
-		self.test(self.get("items"), "Purchase Receipt", True)
+	# def on_submit(self):
+	# 	pass
+	# 	# self.test(self.get("items"), "Purchase Receipt", True)
 	
 	
 	def test(
@@ -109,8 +109,11 @@ class CustomSalesOrder(SalesOrder):
 
 
 	def after_insert(self):
+		print("After Insert/n/n/n/n/n/n/n/nn/n/n/n/n/nn\n\n\n\n\n\n\n\n\n\n\n\n")
 		self.alert_message()
+  
 		self.test(self.get("items"), "Purchase Receipt", True)
+  
 
 
 	def alert_message(self) -> None:
@@ -133,8 +136,6 @@ class CustomSalesOrder(SalesOrder):
 								indicator="red",
 								alert=True
 							)
-
-
 		if items_to_request:
 			workflow_state = frappe.db.get_single_value("ERP automotive settings", "ws_sales_order")
 		
@@ -169,6 +170,7 @@ class CustomSalesOrder(SalesOrder):
 				indicator="orange",
 				alert=True,
 			)
+   
 
 
 
@@ -179,3 +181,6 @@ class CustomSalesOrder(SalesOrder):
 
 
 
+	def on_update(self):
+		super().on_update()
+		super().on_submit()
