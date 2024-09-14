@@ -15,6 +15,7 @@
   "customs_declaration_number",
   "customs_declaration_date",
   "customs_duties",
+  "serial_no",
   "section_break_fx6v2",
   "item_variant_attribute",
   "owne_section",
@@ -136,12 +137,18 @@
    "fieldtype": "Link",
    "label": "item",
    "options": "Item"
+  },
+  {
+   "fieldname": "serial_no",
+   "fieldtype": "Link",
+   "label": "Serial No",
+   "options": "Serial No"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-09-12 16:26:16.693021",
+ "modified": "2024-09-14 14:53:52.125834",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "customs card",

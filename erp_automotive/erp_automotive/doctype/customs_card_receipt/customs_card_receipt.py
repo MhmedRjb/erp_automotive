@@ -25,7 +25,7 @@ class customscardreceipt(Document):
 				"customs_card_number":item.customs_card,
 				"customs_card_date":self.date,
 				"iamge":item.custom_image,
-
+				"serial_no":item.serial_no,
 			}
 			cc.update(customs_card)
 			item_attributes = frappe.get_all(
