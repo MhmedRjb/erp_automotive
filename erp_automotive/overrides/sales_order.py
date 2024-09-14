@@ -8,13 +8,11 @@ from erpnext.stock.doctype.stock_reservation_entry.stock_reservation_entry impor
 )
 from frappe.utils import cint, flt, nowdate, nowtime
 from typing import Literal
-from frappe.model.workflow import get_workflow_name
+from erp_automotive.utilities.validate import validate_erp_automotive_settings
 class CustomSalesOrder(SalesOrder):
     
 	def on_submit(self):
 
-		# super().on_submit()
-		
 		self.test(self.get("items"), "Purchase Receipt", True)
 	
 	
@@ -177,12 +175,7 @@ class CustomSalesOrder(SalesOrder):
  
 	def validate(self):
 		super().validate()
+		validate_erp_automotive_settings()
 
-		workflow_name = get_workflow_name("Sales Order")
-		if not workflow_name:
-			return
-		ws_salesorder_po = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_po")
-		ws_salesorder_ps = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_ps")
-		if not ws_salesorder_po or not ws_salesorder_ps:
-			message = _("ws_salesorder_po and ws_salesorder_ps in ERP Automotive Settings can't not be empty")
-			frappe.throw(message, title="Sales Order")
+
+

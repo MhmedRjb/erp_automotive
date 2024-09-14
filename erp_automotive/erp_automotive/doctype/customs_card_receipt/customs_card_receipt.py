@@ -4,7 +4,8 @@
 # import frappe
 from frappe.model.document import Document
 import frappe
-
+from frappe import _
+from frappe.utils import get_url_to_form
 class customscardreceipt(Document):
 	
 	def validate(self):
@@ -44,14 +45,16 @@ class customscardreceipt(Document):
 			cc.save()
 			cc.submit()
 			frappe.db.commit()
-
+			customs_card_link = get_url_to_form("Customs Card", item.customs_card)
+			frappe.msgprint(
+				_("Customs Card {0} is created").format(f'<a href="{customs_card_link}">{frappe.bold(item.customs_card)}</a>'),
+				title=_("Customs Card"),
+				indicator="green",
+				alert=True
+			)
 			
-	def after_cancel(self):
-		pass
 
 	def before_cancel(self):
-		# print ("before_ cancel")
-		# print("===========================\n\n\n========================")
 		for item in self.items:
 			frappe.db.set_value("Serial No", item.serial_no, "customs_card", "get deleted")
 
