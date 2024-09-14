@@ -109,9 +109,7 @@ class CustomSalesOrder(SalesOrder):
 
 
 	def after_insert(self):
-		print("After Insert/n/n/n/n/n/n/n/nn/n/n/n/n/nn\n\n\n\n\n\n\n\n\n\n\n\n")
-		self.alert_message()
-  
+		self.alert_message()  
 		self.test(self.get("items"), "Purchase Receipt", True)
   
 
@@ -137,6 +135,7 @@ class CustomSalesOrder(SalesOrder):
 								alert=True
 							)
 		if items_to_request:
+			
 			workflow_state = frappe.db.get_single_value("ERP automotive settings", "ws_sales_order")
 		
 			material_request = {

@@ -1,16 +1,6 @@
 [
     {
      "doctype": "Custom Field",
-     "dt": "Serial No",
-     "fieldname": "customs_card",
-     "fieldtype": "Data",
-     "insert_after": "serial_no",
-     "label": "Customs Card",
-     "module": "Erp Automotive",
-     "name": "Serial No-customs_card"
-    },
-    {
-     "doctype": "Custom Field",
      "dt": "card receipt item",
      "fieldname": "custom_image",
      "fieldtype": "Attach Image",
@@ -18,18 +8,6 @@
      "label": "image",
      "module": "Erp Automotive",
      "name": "card receipt item-custom_image"
-    },
-    {
-     "default": "un Reserved",
-     "doctype": "Custom Field",
-     "dt": "Serial No",
-     "fieldname": "custom_reservation_status",
-     "fieldtype": "Select",
-     "insert_after": "status",
-     "label": "reservation status",
-     "module": "Erp Automotive",
-     "name": "Serial No-custom_reservation_status",
-     "options": "Reserved\nun Reserved"
     },
     {
      "doctype": "Custom Field",
