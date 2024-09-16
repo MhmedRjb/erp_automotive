@@ -10,7 +10,8 @@ def validate_erp_automotive_settings():
     ws_sales_order= frappe.db.get_single_value("ERP Automotive Settings", "ws_sales_order")
     ws_salesorder_po = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_po")
     ws_salesorder_ps = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_ps")
+    ws_salesorder_dn = frappe.db.get_single_value("ERP Automotive Settings", "ws_salesorder_dn")
 
-    if not ws_salesorder_po or not ws_salesorder_ps or not ws_sales_order:
+    if not ws_salesorder_po or not ws_salesorder_ps or not ws_sales_order or not ws_salesorder_dn:
         message = _("be sure there is no empty field in ERP Automotive Settings or disable the workflow")
         frappe.throw(message, title="Sales Order")

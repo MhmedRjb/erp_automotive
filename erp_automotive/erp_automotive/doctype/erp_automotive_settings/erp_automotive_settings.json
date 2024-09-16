@@ -15,7 +15,8 @@
   "column_break_imjz",
   "ws_salesorder_po",
   "column_break_sckt",
-  "ws_salesorder_ps"
+  "ws_salesorder_ps",
+  "ws_salesorder_dn"
  ],
  "fields": [
   {
@@ -76,12 +77,18 @@
    "fieldtype": "Link",
    "label": "Workflow State after created purchase receipt",
    "options": "Workflow State"
+  },
+  {
+   "fieldname": "ws_salesorder_dn",
+   "fieldtype": "Link",
+   "label": "Workflow State after created delivery note",
+   "options": "Workflow State"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-09-14 10:05:56.244778",
+ "modified": "2024-09-16 12:10:15.639133",
  "modified_by": "Administrator",
  "module": "Erp Automotive",
  "name": "ERP automotive settings",

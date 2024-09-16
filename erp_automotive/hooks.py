@@ -119,6 +119,7 @@ override_doctype_class = {
     "Sales Order": "erp_automotive.overrides.sales_order.CustomSalesOrder",
     "Stock Reservation Entry": "erp_automotive.overrides.stock_reservation_entry.CustomStockReservationEntry",
     "Purchase Order": "erp_automotive.overrides.purchase_order.CustomPurchaseOrder",
+    "Delivery Note": "erp_automotive.overrides.delivery_note.CustomDeliveryNote",
 } 
 
 
