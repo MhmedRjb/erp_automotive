@@ -110,7 +110,7 @@ frappe.ui.form.on('Sales Order', {
                 "filters": {
                     item_code: frm.doc.custom_item_name,    
                     status: "Active",
-                    custom_reservation_status:"un Reserved",
+                    custom_reservation_status:"unReserved",
                     warehouse: frm.doc.set_warehouse
                     
                 }
@@ -306,7 +306,7 @@ function openSerialNumberDialog(frm, row, existingSerials) {
                                 filters: {
                                     item_code: row.item_code,
                                     status: "Active",
-                                    custom_reservation_status:"un Reserved",
+                                    custom_reservation_status:"unReserved",
                                     warehouse: row.warehouse
                                 }
                             };

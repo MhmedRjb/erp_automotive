@@ -17,7 +17,7 @@ frappe.ui.form.on('Stock Reservation Entry',  {
 				warehouse: row.warehouse,
 				status: "Active",
 				name: ["not in", selected_serial_nos],
-				custom_reservation_status:"un Reserved",
+				custom_reservation_status:"unReserved",
             },
           };
         });

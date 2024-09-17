@@ -17,7 +17,7 @@ class CustomStockReservationEntry(StockReservationEntry):
 		super().on_submit()
 		for sb in self.sb_entries:
 			sn_doc = frappe.get_doc("Serial No", sb.serial_no)
-			sn_doc.custom_reservation_status = _("Reserved")
+			sn_doc.custom_reservation_status = ("Reserved")
 			sn_doc.save()
 
 	def on_cancel(self):
@@ -25,7 +25,7 @@ class CustomStockReservationEntry(StockReservationEntry):
 		for sb in self.sb_entries:
 			print(self.item_code, sb.serial_no)
 			sn_doc = frappe.get_doc("Serial No", sb.serial_no)
-			sn_doc.custom_reservation_status = _("un Reserved")
+			sn_doc.custom_reservation_status = ("unReserved")
 			sn_doc.save()
 
 	def on_update_after_submit(self):
@@ -35,12 +35,12 @@ class CustomStockReservationEntry(StockReservationEntry):
 		for sb in old_sb_entries:
 			if sb not in new_sb_entries:
 				sn_doc = frappe.get_doc("Serial No", sb)
-				sn_doc.custom_reservation_status = _("un Reserved")
+				sn_doc.custom_reservation_status = ("unReserved")
 				sn_doc.save()
 		for sb in new_sb_entries:
 			if sb not in old_sb_entries:
 				sn_doc = frappe.get_doc("Serial No", sb)
-				sn_doc.custom_reservation_status = _("Reserved")
+				sn_doc.custom_reservation_status = ("Reserved")
 				sn_doc.save()
 
 
